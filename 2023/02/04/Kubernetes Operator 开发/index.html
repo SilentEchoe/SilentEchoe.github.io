@@ -127,6 +127,65 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
@@ -159,11 +218,37 @@
             <p>在 Kubernetes 上运行工作负载的人们都喜欢通过自动化来处理重复的任务。 Operator 模式会封装我们编写的（Kubernetes 本身提供功能以外的）任务自动化代码。</p>
 <blockquote>
 <p><strong>Operator 通过扩展 Kubernetes 控制平面和 API 进行工作。Operator 将一个 endpoint（称为自定义资源 CR）添加到 Kubernetes API 中，该 endpoint 还包含一个监控和维护新类型资源的控制平面组件。</strong></p>
+<p><strong>Operator 由一组监听 Kubernetes 资源的 Controller 组成。Controller 可以实现调协（reconciliation loop），另外每个 Controller 都负责监视一个特定资源，当创建、更新或删除受监视的资源时就会触发调协。</strong></p>
 </blockquote>
-<p>Kubernetes Operator 扩展开源项目有很多，但本文只涉及 Operator-SDK 和 Kubebuilder</p>
-<p>Kubebuilder 是一个基于 <a target="_blank" rel="noopener" href="https://jimmysong.io/kubernetes-handbook/concepts/crd.html">CRD</a> 来构建 Kubernetes API 的框架，可以使用 <a target="_blank" rel="noopener" href="https://jimmysong.io/kubernetes-handbook/GLOSSARY.html#crd">CRD</a> 来构建 API、Controller 和 Admission Webhook。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># Mac 安装 Kubebuilder</span><br><span class="line">brew install Kubebuilder</span><br><span class="line"></span><br><span class="line">mkdir $GOPATH/src/projectName</span><br><span class="line">cd $GOPATH/src/projectName</span><br><span class="line">#使用 demo.kubebuilder.io 域，所有的 API 组将是&lt;group&gt;.demo.kubebuilder.io.</span><br><span class="line"></span><br><span class="line">#创建项目</span><br><span class="line">kubebuilder init --domain demo.kubebuilder.io</span><br><span class="line"></span><br><span class="line">#创建API</span><br><span class="line">kubebuilder create api --group batch --version v1 --kind CronJob</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Kubernetes 中，有一组内置的 Controller 在主节点中的 controller-manager 内部运行。比如：</p>
+<p>Deployment  ReplicaSet  DaemonSet  Service  Job  CronJob Endpoint  StatefulSet 等</p>
+<h3 id="Kubebuilder"><a href="#Kubebuilder" class="headerlink" title="Kubebuilder"></a><strong>Kubebuilder</strong></h3><p><strong>Controller-runtime</strong> 是一个用于开发 Kubernetes Controller 的库，包含了各种Controller 常用的模块。而 Kubebuilder 渲染出的框架使用的就是 Controller-runtime, 在了解怎么使用 Kubebuilder 进行开发前，先对 Controller-runtime 进行一些了解，这会更好帮助我们开发 Controller</p>
+<div align="center">
+        <img src="https://s1.ax1x.com/2023/02/09/pSWQEcT.png">  
+</div>
 
+<p>Controller-runtime 的整体架构图</p>
+<p><img src="/Users/kai/Downloads/Untitled.png" alt="Untitled"></p>
+<p><strong>Builder 阶段</strong></p>
+<p><code>Builder</code> 用于生成 Controller 或 Webhook，通过链式调用可以组装出所需的 Controller ,一般情况下会先创建出一个 Manager 然后再创建 Controller :</p>
+<p>![image-20230209152617781](&#x2F;Users&#x2F;kai&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20230209152617781.png)</p>
+<p>在Kubebuilder 中，组装 Controller 的函数是 <code>SetupWithManager</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SetupWithManager sets up the controller with the Manager.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *DemoReconciler)</span></span> SetupWithManager(mgr ctrl.Manager) <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> ctrl.NewControllerManagedBy(mgr).</span><br><span class="line">		For(&amp;webappv1.Demo&#123;&#125;).</span><br><span class="line">		Complete(r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上述代码片段中创建一个新的 Controller 并且使用 <code>For</code> （主要监听资源）去监听&amp;webappv1.Demo（自定义资源）在<code>ControllerManagedBy</code>和<code>Complete</code> 之前是一系列对 Controller 的配置，比如可以使用 <code>Owns</code> 监听其他资源 (Pod)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SetupWithManager sets up the controller with the Manager.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r *DemoReconciler)</span></span> SetupWithManager(mgr ctrl.Manager) <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> ctrl.NewControllerManagedBy(mgr).</span><br><span class="line">		For(&amp;webappv1.Demo&#123;&#125;).</span><br><span class="line">		Owns(&amp;corev1.Pod&#123;&#125;).</span><br><span class="line">		Complete(r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后通过<code>Complete</code> 创建新的 Controller ，并将创建的 Controller 注册到 Manager 中。</p>
+<p>当然除了上述的 <code>For</code> 和 <code>Owns</code> 函数以外,还能对 Controller 进行一些其他的配置, <code>WithEventFilter()</code>对Controller的事件进行过滤; 用<code>Named()</code>配置Controller的名称等;用<code>Watches()</code>配置其他需要监听的资源。</p>
+<p><strong>Watches 函数</strong></p>
+<p><strong>Kubebuilder 开发</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Mac 安装 Kubebuilder</span></span><br><span class="line">brew install Kubebuilder</span><br><span class="line"></span><br><span class="line">mkdir $GOPATH/src/projectName</span><br><span class="line">cd $GOPATH/src/projectName</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">使用 demo.kubebuilder.io 域，所有的 API 组将是&lt;group&gt;.demo.kubebuilder.io.</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建项目</span></span><br><span class="line">kubebuilder init --domain demo.kubebuilder.io --owner kai</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建API(APP)</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">gourp（资源组）</span></span><br><span class="line">kubebuilder create api --group webapp --version v1 --kind Demo</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">更改Crd后需要输入命令生成</span></span><br><span class="line">make manifests generate</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">安装CRD</span></span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">启动服务</span></span><br><span class="line">cd $GOPATH/src/projectName</span><br><span class="line">make run</span><br></pre></td></tr></table></figure>
+
+<p>![image-20230206150437195](&#x2F;Users&#x2F;kai&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20230206150437195.png)</p>
 
         </div>
 
