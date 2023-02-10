@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="John Doe">
+
+
+
+
+
+<title>网络协议 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">网络协议</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">John Doe</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">January 6, 2022&nbsp;&nbsp;16:10:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Go/">Go</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h1><p><strong>协议三要素</strong></p>
+<p><strong>语法：一段内容要符合一定的规则和格式。</strong></p>
+<p><strong>语义：一段内容要代表某种意义。</strong></p>
+<p><strong>顺序：一段线性的任务执行</strong></p>
+<h2 id="在浏览器输入www-google-com经历了几个协议-流程是怎么样的？"><a href="#在浏览器输入www-google-com经历了几个协议-流程是怎么样的？" class="headerlink" title="在浏览器输入www.google.com经历了几个协议 流程是怎么样的？"></a><strong>在浏览器输入<a target="_blank" rel="noopener" href="http://www.google.com经历了几个协议/">www.google.com经历了几个协议</a> 流程是怎么样的？</strong></h2><p>浏览器会先去 hosts 文件中查找域名对应的 IP 地址，如果文件中不存在对应的 IP 地址，那么需要 <strong>DNS 解析</strong>。</p>
+<p>DNS 会先在本地域名服务器中查询域名对应的 IP 地址，如果没有找到，会向根域名服务器发送一个请求。最终 DNS 会返回一个 IP 地址。</p>
+<h3 id="浏览器向-Web-服务器发送一个-HTTP-请求"><a href="#浏览器向-Web-服务器发送一个-HTTP-请求" class="headerlink" title="浏览器向 Web 服务器发送一个 HTTP 请求"></a><strong>浏览器向 Web 服务器发送一个 HTTP 请求</strong></h3><p>浏览器会打包它的请求，一般情况下会使用 <strong>HTTP</strong> ,有安全需求的会用到 <strong>HTTPS</strong>, 但是浏览器没有直接向服务器直接发送包的能力，浏览器委托操作系统完成这一任务。</p>
+<p><strong>网络为什么要分层？</strong></p>
+<p>复杂的程序都要分层，这是程序设计的要求。</p>
+<p><strong>无类型域间选路（CIDR）</strong></p>
+<p>将 32 位的 IP 地址一分为二，前面是 <strong>网络号,<strong>后面是</strong>主机号。</strong>例如 10.100.122.2&#x2F;24 后面24的意思是，32位中，前24位是网络号，后8位是主机号。</p>
+<p><strong>广播地址：</strong>如果发送 10.100.122.255 ，如果发送这个地址，所有 10.100.122 网络里的机器都可以收到。</p>
+<p><strong>子网掩码和 IP 地址进行 AND 计算可以得到网络号。</strong></p>
+<p>Mac 地址更像是一个身份证，是一个唯一标识。它的唯一性设计是为了组网的时候，不同的网卡放在一个网络里面，可以不用担心冲突。但是没有定位功能。</p>
+<p>Linux 默认的逻辑是：如果这是一个跨网段的调用，它不会直接将包发送到网络上，而是企图将包发送到网关。</p>
+<p><strong>动态主机配置协议 （DHCP）</strong></p>
+<p>自动配置 IP 地址的协议叫做 动态主机配置协议（Dynamic Host Configuration Protocol）,简称 DHCP。</p>
+<p>如果是数据中心的服务器，IP 一旦配置好了，基本不会变。</p>
+<p><strong>DHCP Discover</strong></p>
+<p>新机器使用 IP 地址发送一个广播包，广播封装了 UDP, UDP封装了 BOOTP。DHCP 是 BOOTP 的增强版，如果抓包，可能看到的还是 BOOTP协议。</p>
+<p>DHCP Server 接收到广播包，会给客户端分配一个 IP 地址，同时 DHCP Server 保留了此 IP 地址，这是为了防止重复颁发 IP地址。</p>
+<p><strong>IP 地址的收回和续租</strong></p>
+<p>客户机会在租期百分之五十的时候，直接向 DHCP Server 发送新的消息包，以此来续租。</p>
+<h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><p>《趣谈网络协议》</p>
+<p>《网络是怎么运行的？》</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>John Doe</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2022/01/06/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">https://ananonymousfriend.github.io/2022/01/06/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"># 学习笔记</a>
+                    
+                        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"># 计算机网络</a>
+                    
+                        <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"># 网络协议</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/01/17/Kubernetes%20%E7%BD%91%E7%BB%9C/">Kubernetes 网络</a>
+            
+            
+            <a class="next" rel="next" href="/2021/11/18/Kubernetes%20Pod/">Kubernetes Pod</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© John Doe | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

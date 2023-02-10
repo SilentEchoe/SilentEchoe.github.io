@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="John Doe">
+
+
+
+
+
+<title>Kubernetes 容器持久化存储 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Kubernetes 容器持久化存储</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">John Doe</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">February 23, 2022&nbsp;&nbsp;16:22:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Kubernetes/">Kubernetes</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="什么是持久化-Volume-？"><a href="#什么是持久化-Volume-？" class="headerlink" title="什么是持久化 Volume ？"></a>什么是持久化 Volume ？</h1><p>容器的 Volume，其实就是将一个宿主机的目录与容器内的目录绑定挂在了一起。持久化 Volume 指宿主机上的这个目录，具备 “持久性”。即这个目录的内容，不会因为容器的删除被清理掉，也不会跟当前宿主机绑定，当容器被重启或在其他节点上重建后，它依然能通过挂载这个 Volume 访问到旧内容。</p>
+<p>所以大多数情况下，持久化 Volume 的实现，往往依赖一个远程存储服务，比如远程文件存储等。</p>
+<h2 id="什么是-PV-？"><a href="#什么是-PV-？" class="headerlink" title="什么是 PV ？"></a>什么是 PV ？</h2><p>PV 描述的是持久化存储数据卷。这个对象主要是定义一个持久化存储在宿主机的目录。</p>
+<p>通常情况下，PV 对象是由运维人员事先创建在 Kubernetes 集群中待用。官方例子如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolume</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">task-pv-volume</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">local</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">storageClassName:</span> <span class="string">manual</span></span><br><span class="line">  <span class="attr">capacity:</span></span><br><span class="line">    <span class="attr">storage:</span> <span class="string">10Gi</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">hostPath:</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;/mnt/data&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="什么是-PVC？"><a href="#什么是-PVC？" class="headerlink" title="什么是 PVC？"></a>什么是 PVC？</h2><p>PVC 是 Pod 希望使用的持久化存储的属性。比如 Volume 存储的大小，可读写权限等。</p>
+<p>PVC 通常由开发者创建，或者以 PVC 模板的方式成为 StatefulSet 的一部分，然后由 StatefulSet 控制器负责创建带编号的 PVC。</p>
+<p>但是开发者创建的 PVC 真正被容器使用起来，就必须和某个符合条件的 PV 进行绑定。它需要满足两个条件：</p>
+<p>1.PV 和 PVC 的 spec 字段，比如 PV 的存储大小必须满足 PVC 的要求。</p>
+<p>2.PV 和 PVC 的 storageClassName 字段必须一样。</p>
+<p>PVC 和 PV 进行绑定后，Pod 就可以使用 hostPath 等常规类型的 Volume 一样，在自己的 YAML 文件里声明使用这个 PVC：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">role:</span> <span class="string">web-frontend</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">        <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">    <span class="attr">volumeMounts:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">task-pv-volume</span></span><br><span class="line">          <span class="attr">mountPath:</span> <span class="string">&quot;/usr/share/nginx/html&quot;</span></span><br><span class="line">  <span class="attr">volumes:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">task-pv-volume</span> </span><br><span class="line">    <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">      <span class="attr">claimName:</span> <span class="string">task-pv-volume</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>PVC 可以理解为持久化存储的 “接口” ，它提供了对某种持久化存储的描述，但不提供具体的实现；而这个持久化存储的实现部分则由 PV 负责完成的。</p>
+</blockquote>
+<h2 id="Volume-Controller-（专门处理持久化存储的控制器）"><a href="#Volume-Controller-（专门处理持久化存储的控制器）" class="headerlink" title="Volume Controller （专门处理持久化存储的控制器）"></a>Volume Controller （专门处理持久化存储的控制器）</h2><h3 id="PersistentVolumeController"><a href="#PersistentVolumeController" class="headerlink" title="PersistentVolumeController"></a>PersistentVolumeController</h3><p>用于动态配对 PV 和 PVC。它会不断检测每一个 PVC 是不是处于 Bound （已绑定）的状态，如果不是，它就会遍历所有可用的 PV，并尝试绑定。</p>
+<h2 id="两阶段处理"><a href="#两阶段处理" class="headerlink" title="两阶段处理"></a>两阶段处理</h2><p><strong>第一阶段 （Attach）：Kubelet 需要先调用 API 将它提供的 Persistent Disk 挂载到 Pod 所在的宿主机上。</strong></p>
+<p><strong>第二阶段（Mount）：格式化整个磁盘设备，然后将它挂载到宿主机指定的挂载点上。</strong></p>
+<p>AttachDetachController 会在第一阶段不断检查每一个 Pod 对应的 PV ，和这个 Pod 所在宿主机之间挂载情况，而决定是否需要对这个 PV 进行 Attach 操作。</p>
+<p>AttachDetachController 是一个独立 kubelet 主循环的 Goroutine，用于控制第二阶段操作。</p>
+<h2 id="StorageClass"><a href="#StorageClass" class="headerlink" title="StorageClass"></a>StorageClass</h2><p>Kubernetes 为我们提供了一套可以自动创建 PV 的机制，即： Dynamic Provisioning</p>
+<p>StorageClass 对象会定义两个部分：</p>
+<p>1.PV 的属性。比如存储类型，Volume 的大小</p>
+<p>2.PV 需要用到的存储插件。</p>
+<p>Kubernetes 能根据用户提交的 PVC ,找到一个对应的 Storage Class ，然后创建出需要的 PV。</p>
+<p>Kubernetes 只会将 StorageClass 相同的 PVC 和 PV 绑定起来。</p>
+<h2 id="Local-Persistent-Volume"><a href="#Local-Persistent-Volume" class="headerlink" title="Local Persistent Volume"></a>Local Persistent Volume</h2><p>适合 Local Persistent Volume 的应用：<strong>高优先级的系统应用，需要在多个不同节点上存储数据，并且对 I&#x2F;O 较为敏感。比如分布式数据存储等，分布式文件等，需要在本地磁盘上进行大量数据缓存的分布式应用。</strong></p>
+<p>Local Persistent Volume 的应用必须具备数据备份和恢复能力。</p>
+<blockquote>
+<p>不能将宿主机的一个目录当作 PV 使用，因为宿主机所在的磁盘可能随时都被应用写满，严重时整个宿主机会直接宕机。 而且，不同的把本地目录直接缺乏 I&#x2F;O 隔离机制。</p>
+</blockquote>
+<p>所以 Local Persistent Volume 对应的存储介质，一定是一块额外挂载在宿主机的磁盘或者块设备。</p>
+<p>可以将 一个 PV 看做一块存储介质盘。</p>
+<p>在开始使用 Local Persistent Volume 之前，需要有一个前提条件，需要在集群里配置好磁盘或者块设备。在私有环境下：</p>
+<p>1.宿主机挂载并格式化一个可用的本地磁盘，用来充当额外挂载的盘。</p>
+<p>2.宿主机上挂载几个 RAM Disk (内存盘）来模拟本地磁盘。</p>
+<h1 id="Container-Storage-Interface-（CSI）-插件开发"><a href="#Container-Storage-Interface-（CSI）-插件开发" class="headerlink" title="Container Storage Interface （CSI） 插件开发"></a>Container Storage Interface （CSI） 插件开发</h1><p>CSI 插件体系的设计思想，就是把 Provision 阶段及 Kubernetes 里面一部分存储管理功能，从主干代码中剥离出来，做成了几个单独的组件。这些组件会通过 Watch Api 监听 Kubernetes 里与存储相关的事件变化，比如 PVC 的创建，来执行具体的存储管理动作。</p>
+<h2 id="External-Components-组件"><a href="#External-Components-组件" class="headerlink" title="External Components 组件"></a>External Components 组件</h2><h3 id="Driver-Registrar"><a href="#Driver-Registrar" class="headerlink" title="Driver Registrar"></a>Driver Registrar</h3><p>负责将插件注册到 kubelet 里面，类似于将可执行文件放在插件目录下。但是在具体实现上，Driver Registrar 需要请求 CSI 插件的 Identity 服务来获取插件信息。</p>
+<h3 id="External-Provisioner"><a href="#External-Provisioner" class="headerlink" title="External Provisioner"></a>External Provisioner</h3><p>负责 Provision 阶段。具体实现中， External Provisioner 监听 APIServer 里的 PVC对象。当一个 PVC 被创建时，它就会调用 CSI Controller 的 CreateVolume 方法，创建对应的 PV。</p>
+<p>如果是公有云磁盘，则需要调用公有云API 来创建这个 PV。</p>
+<p>因为 CSI 插件是独立的，所以它会自己定义一个单独的 Volume 类型。</p>
+<h3 id="Externa-Attacher"><a href="#Externa-Attacher" class="headerlink" title="Externa Attacher"></a>Externa Attacher</h3><p>负责的“Attach 阶段”。它监听 APIServer 里 VolumeAttachment 对象的变化，因为 <strong>VolumeAttachment 对象</strong>是 Kubernetes 确认一个 Volume 可以进入 “<strong>Attach 阶段</strong>” 的重要标志。如果Kubernetes 确定可以进入 Attach 阶段，那么 <strong>External Attacher</strong> 就会调用 CSI Controller 服务的 ControllerPublish 方法，完成它所对应操作。</p>
+<p>但是 Mount 阶段不是 <strong>External Attacher 管辖范围。</strong></p>
+<h1 id="CSI-插件服务"><a href="#CSI-插件服务" class="headerlink" title="CSI 插件服务"></a>CSI 插件服务</h1><p>在 Kuvernetes 中，所有的资源定义（Deployment, Service ..）其实是一个 Object ，可以将 Kubernetes 看作一个 Database ，无论是 Operator 还是 CSI 其核心本质都是不停的 Watch 特定的 Object，一但 kubectl 或者其他客户端 “动了” 这个 Object，我们的对应实现程序就 Watch 到变更然后作出相应的响应；<strong>对于 CSI 编写者来说，这些 Watch 动作已经不必自己实现 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#custom-controllers">Custom Controller</a>，官方为我们提供了 <a target="_blank" rel="noopener" href="https://kubernetes-csi.github.io/docs/sidecar-containers.html">CSI Sidecar Containers</a>；</strong>并且在新版本中这些 Sidecar Containers 实现极其完善，比如自动的多节点 HA(Etcd 选举)等。</p>
+<p><strong>所以到迄今为止，所谓的 CSI 插件开发事实上并非面向 Kubernetes API 开发，而是面向 Sidecar Containers 的 gRPC 开发，Sidecar Containers 一般会和我们自己开发的 CSI 驱动程序在同一个 Pod 中启动，然后 Sidecar Containers Watch API 中 CSI 相关 Object 的变动，接着通过本地 unix 套接字调用我们编写的 CSI 驱动。</strong></p>
+<p> CSI 插件会包含三个服务，对应 <strong>External Components 组件</strong>中三个部分。</p>
+<h2 id="CSI-Identity"><a href="#CSI-Identity" class="headerlink" title="CSI Identity"></a>CSI Identity</h2><p>负责对外暴露这个插件本身的信息：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">service Identity &#123;</span><br><span class="line">  <span class="comment">// return the version and name of the plugin</span></span><br><span class="line">  rpc GetPluginInfo(GetPluginInfoRequest)</span><br><span class="line">    returns (GetPluginInfoResponse) &#123;&#125;</span><br><span class="line">  <span class="comment">// reports whether the plugin has the ability of serving the Controller interface</span></span><br><span class="line">  rpc GetPluginCapabilities(GetPluginCapabilitiesRequest)</span><br><span class="line">    returns (GetPluginCapabilitiesResponse) &#123;&#125;</span><br><span class="line">  <span class="comment">// called by the CO just to check whether the plugin is running or not</span></span><br><span class="line">  rpc Probe (ProbeRequest)</span><br><span class="line">    returns (ProbeResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="CSI-Controller"><a href="#CSI-Controller" class="headerlink" title="CSI Controller"></a>CSI Controller</h2><p>定义对 CSI Volume (对应 Kubernetes 里的 PV) 的管理接口。比如：创建和删除 CSI Volume、对 CSI Volume 进行 Attach&#x2F;Dettach（在 CSI 里，这个操作被叫作 Publish&#x2F;Unpublish），以及对 CSI Volume 进行 Snapshot 等，它们的接口定义如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">service Controller &#123;</span><br><span class="line">  // provisions a volume</span><br><span class="line">  rpc CreateVolume (CreateVolumeRequest)</span><br><span class="line">    returns (CreateVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  // deletes a previously provisioned volume</span><br><span class="line">  rpc DeleteVolume (DeleteVolumeRequest)</span><br><span class="line">    returns (DeleteVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  // make a volume available on some required node</span><br><span class="line">  rpc ControllerPublishVolume (ControllerPublishVolumeRequest)</span><br><span class="line">    returns (ControllerPublishVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  // make a volume un-available on some required node</span><br><span class="line">  rpc ControllerUnpublishVolume (ControllerUnpublishVolumeRequest)</span><br><span class="line">    returns (ControllerUnpublishVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  // make a snapshot</span><br><span class="line">  rpc CreateSnapshot (CreateSnapshotRequest)</span><br><span class="line">    returns (CreateSnapshotResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  // Delete a given snapshot</span><br><span class="line">  rpc DeleteSnapshot (DeleteSnapshotRequest)</span><br><span class="line">    returns (DeleteSnapshotResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="CSI-Node"><a href="#CSI-Node" class="headerlink" title="CSI Node"></a>CSI Node</h2><p>CSI Volume 需要在宿主机上执行的操作，都定义在了 CSI Node 服务里面：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">service Node &#123;</span><br><span class="line">  <span class="comment">// temporarily mount the volume to a staging path</span></span><br><span class="line">  rpc NodeStageVolume (NodeStageVolumeRequest)</span><br><span class="line">    returns (NodeStageVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// unmount the volume from staging path</span></span><br><span class="line">  rpc NodeUnstageVolume (NodeUnstageVolumeRequest)</span><br><span class="line">    returns (NodeUnstageVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// mount the volume from staging to target path</span></span><br><span class="line">  rpc NodePublishVolume (NodePublishVolumeRequest)</span><br><span class="line">    returns (NodePublishVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// unmount the volume from staging path</span></span><br><span class="line">  rpc NodeUnpublishVolume (NodeUnpublishVolumeRequest)</span><br><span class="line">    returns (NodeUnpublishVolumeResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// stats for the volume</span></span><br><span class="line">  rpc NodeGetVolumeStats (NodeGetVolumeStatsRequest)</span><br><span class="line">    returns (NodeGetVolumeStatsResponse) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// Similar to NodeGetId</span></span><br><span class="line">  rpc NodeGetInfo (NodeGetInfoRequest)</span><br><span class="line">    returns (NodeGetInfoResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Mount 阶段在 CSI Node 里面的接口，是NodeStageVolume 和 NodePublishVolume 两个接口共同实现的。</p>
+<h1 id="实践操作"><a href="#实践操作" class="headerlink" title="实践操作"></a>实践操作</h1><h2 id="实现-Identity-Server"><a href="#实现-Identity-Server" class="headerlink" title="实现 Identity Server"></a>实现 Identity Server</h2><h1 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h1><p>《深入剖析Kubernetes》</p>
+<p>[如何编写 CSI 插件]: 	“<a target="_blank" rel="noopener" href="https://mritd.com/2020/08/19/how-to-write-a-csi-driver-for-kubernetes/">https://mritd.com/2020/08/19/how-to-write-a-csi-driver-for-kubernetes/</a>“</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>John Doe</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2022/02/23/Kubernetes%20%E5%AE%B9%E5%99%A8%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8/">https://ananonymousfriend.github.io/2022/02/23/Kubernetes%20%E5%AE%B9%E5%99%A8%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"># 学习笔记</a>
+                    
+                        <a href="/tags/Kubernetes/"># Kubernetes</a>
+                    
+                        <a href="/tags/%E5%AD%98%E5%82%A8/"># 存储</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/03/24/Kubernetes%20%E8%B0%83%E5%BA%A6%E6%8E%A7%E5%88%B6%E5%8E%9F%E7%90%86/">Kubernetes 调度控制原理</a>
+            
+            
+            <a class="next" rel="next" href="/2022/01/17/Kubernetes%20StatefulSet/">Kubernetes StatefulSet</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© John Doe | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

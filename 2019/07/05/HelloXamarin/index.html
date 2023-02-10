@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="John Doe">
+
+
+
+
+
+<title>Hello Xamarin.mac | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Hello Xamarin.mac</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">John Doe</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">July 5, 2019&nbsp;&nbsp;21:27:59</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Net/">.Net</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><em><strong>踩坑笔记是记录遇到的一些问题, 用于个人反思与后续复盘, 并不一定提供解决方案。当然如果你有好的解决思路, 欢迎留言。</strong></em></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近得到一个新的开发任务：将公司现有的项目移植到 Mac 平台上.</p>
+<p>先展示一下项目的结构图</p>
+<p><img src="https://s1.ax1x.com/2020/04/18/JmNev8.png" alt="JmNev8.png"></p>
+<p>从上图可以看出, 整个项目思路就是把客户端当作处理web端与硬件设备的数据中转。前端与客户端使用 <em>SignalR</em> 进行通讯,  而客户端通过USB与硬件通讯。</p>
+<h2 id="预期"><a href="#预期" class="headerlink" title="预期"></a>预期</h2><p>作者建议的技术方案是：Python 与 .Net Core 混合开发。</p>
+<p>为什么会这么思考呢？是基于如下三个点考虑的：</p>
+<p>​	1.Mac os 自带Python2.7环境, 利用 Python 绘制 Gui , .Net core 作为它的核心服务。（.Net Core能打包成单文件）减少依赖环境。</p>
+<p>​	2.Windows上客户端使用 SignalR 与前端进行通讯, Core是明确支持 SignalR 的, 这样前端无需更改, 缩短开发周期。</p>
+<p>​    3.当时 .Net Core 3.0即将发布, 在提前公布的版本特性中, .Net Core 将支持 WPF , 而在 Windows 上客户端就是使用 WPF 开发的。这意味着只要将Windows 上的客户端改写成 .Net Core,  往后的客户端版本迭代, 只需要写一套核心代码就可以支持两个平台。</p>
+<p>当然这个方案被否决了,  公司要求使用 Xamarin 。</p>
+<h2 id="问题一：Xamarin-Mac-能直接使用SignalR-吗？"><a href="#问题一：Xamarin-Mac-能直接使用SignalR-吗？" class="headerlink" title="问题一：Xamarin.Mac 能直接使用SignalR 吗？"></a>问题一：<strong>Xamarin.Mac 能直接使用SignalR 吗？</strong></h2><p>答案是可行的。</p>
+<p>在面向搜索编程的基础下,  我在Xamarin 社区找到一篇<a target="_blank" rel="noopener" href="https://forums.xamarin.com/discussion/35226/signalr-for-xamarin-mac">问答</a>,  从这篇文章可知,  有人成功地在Xamarin Mac 项目中使用了 SignalR。</p>
+<p>虽然他并未给出具体实现的细节,  但是依旧给我极大的鼓舞。</p>
+<p>至少目前行进的方向是可行的。</p>
+<h2 id="问题二：Xamarin并未涵盖我需要的引用库"><a href="#问题二：Xamarin并未涵盖我需要的引用库" class="headerlink" title="问题二：Xamarin并未涵盖我需要的引用库"></a>问题二：<strong>Xamarin并未涵盖我需要的引用库</strong></h2><p>依靠着官方文档及旧代码,  我开始了我的移植。</p>
+<p>很快地我发现我缺少了一个库 Microsoft.Owin.Host.HttpListener,  在复查了一遍资料以旧代码构建后,  我意识到Windows 上创建本地端口就是依靠的它。</p>
+<p>问题是：Xamarin 的 Nuget 并未找到此包。</p>
+<p>但是随后，我在查阅Xamarin 文档的时,  发现Xamarin有三个不同的目标框架,  双击解决方案,  打开项目选项, 选择常规可以看到。（如下图） </p>
+<p><img src="https://s1.ax1x.com/2020/04/18/Jexb24.png" alt="img"></p>
+<p><img src="https://s1.ax1x.com/2020/04/18/Jex7PU.png" alt="img"></p>
+<p>　从文档中, 我们可以看出, Xamarin.mac Full 使用的是“桌面”版本的子集, 与.net Framework4.5及更高版本几乎完全相同。</p>
+<p>　　选择Xamarin.mac Full 后 重新生成解决方案, 再次打开Nuget包管理, 搜索Dll, 成功找到, 添加。</p>
+<p>　　编译通过, 调式模式执行, 打开前端测试页面进行连接测试。</p>
+<p>　　顺便说明一下, SignalR通讯可以在NetWork 的 WS 中看到传输内容。在Mac 上使用谷歌浏览器会报异常且无法看到传输协议, 但奇怪的是并不影响正常通讯,  只是无法查看。</p>
+<img src="https://s1.ax1x.com/2020/04/18/JexHGF.png"  />
+
+
+
+<h2 id="问题三：Xamarin-Mac-兼容问题？"><a href="#问题三：Xamarin-Mac-兼容问题？" class="headerlink" title="问题三：Xamarin.Mac 兼容问题？"></a>问题三：<strong>Xamarin.Mac 兼容问题？</strong></h2><p>在调试完客户端与硬件的交互后, 一个最严重的问题暴露出来：命令执行的时间过长。</p>
+<p>在经过反复断点调试, 客户端给硬件发指令, 只有第一次执行的时候是属于正常范围（15-30 S）, 第二次执行则需要三到五分钟不等。</p>
+<p>我把注意力集中在与硬件通讯的第三方库上：Hidsharp。查阅相关资料后, 发现这个库是兼容多个平台的。通过阅读源码发现它使用了两套不同的线程调用方式来实现流传输。</p>
+<p>我猜测是线程堵塞造成命令执行过慢。</p>
+<p>接下来三天我都在调试这个问题, 我查阅了关于线程的资料并尝试更改这部分代码, 但是没有任何改善。我意识到我可能走错了方向,我一心认为是线程的问题, 但是以我目前的水准我没有解决它的能力。</p>
+<p>那既然开源库支持Mac平台我相信他们一定做过测试。我重新写了一个客户端, 选择 .Net Framework作为基础框架,使用相同的源码。经过对比测试 .Net Framework 发送指令没有任何问题，无论是响应速度还是命令执行速度……</p>
+<p>使用相同的源码, 目标框架不同, 执行的效率相差甚远, 由此推测差异可能出现在目标框架与Hidsharp兼容上。</p>
+<p>很遗憾, 这篇博文到这里基本已经翻车了, 我既没能力去更改多线程, 也没能力去更改框架, 甚至找不到继续前进的方向。</p>
+<blockquote>
+<p>在Mac 上使用 Sleep(1000)会导致电脑进入睡眠模式。</p>
+</blockquote>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>按照最初的想法Python 和 .Net Core 混合开发, 我私下进行了调研, .Net Core 使用Hidsharp 暂时未出现性能上的问题, 而Python 启动 .Net Core则需要获取管理员权限（这一块也是踩了坑的）。</p>
+<p>最后用Swift 代替了 Python 的部分, 毕竟Swift 更加适配 Mac os, 获取管理员权限也更加方便。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次踩坑也是暴露了自己自身的一些问题：</p>
+<p>1.首先是对多线程的了解太少, 因为不懂, 所以在开发过程中遇到问题容易先入为主, 进而钻进死胡同。</p>
+<p>2.其次阅读源码过少, 对原作者的设计不能很好地理解。 </p>
+<p>其他地方可能会有人有不同的意见：</p>
+<p>1.比如既然使用Swift 为什么不坚持全套写完呢？</p>
+<p>这是考虑到后期客户端进行版本迭代的成本（毕竟招一个Swift程序员专门去迭代Mac 客户端也太浪费了）。如果按照作者的预期, 使用.Net Core 只需写一套代码就可以做到多个平台进行迭代, 却别只是不同平台Gui部分的“外壳”。</p>
+<p>2.可能会有人觉得这种 “外壳” 加核心程序的方案比较诡异。</p>
+<p>其实还是成本问题的考虑, 使用某一种语言进行全书写固然更加健全。但是考虑到公司技术栈和学习成本及开发周期, 算得上是某种妥协。毕竟如果有Linux 移植的需求, 可以直接将核心代码移植过去, 只需编写一个简单的 “外壳”。</p>
+<blockquote>
+<p>.Net core 3.0 支持WPF, 最开始我还以为能直接在Mac 上运行, 结果当然是失败啦。</p>
+</blockquote>
+<p>3.为什么要使用 Xamarin？</p>
+<p>因为公司有 Xamarin 开发App 的经验, 可能觉得使用熟知的技术栈会更加稳妥一点。不过使用Xamarin开发Mac 客户端还是太少了, 相关资料也少, 同事也很难给出有效的建议, 通常为了佐证某一个想法需要写大量的Demo 代码去验证。</p>
+<blockquote>
+<p>个人是不会再深入研究Xamarin的</p>
+</blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>John Doe</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2019/07/05/HelloXamarin/">https://ananonymousfriend.github.io/2019/07/05/HelloXamarin/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Xamarin/"># Xamarin</a>
+                    
+                        <a href="/tags/Mac/"># Mac</a>
+                    
+                        <a href="/tags/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"># 踩坑笔记</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/17/Go%E7%9A%84%E6%8C%87%E9%92%88/">初识指针</a>
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© John Doe | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
