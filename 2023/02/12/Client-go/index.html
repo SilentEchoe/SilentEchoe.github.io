@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="John Doe">
+
+
+
+
+
+<title>Client-go 源码分析 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Client-go 源码分析</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">John Doe</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">February 12, 2023&nbsp;&nbsp;18:56:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Kubernetes/">Kubernetes</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>Client-go是与kube-apiserver通信的clients的具体实现。</p>
+<p><a target="_blank" rel="noopener" href="https://imgse.com/i/pS7DEOx"><img src="https://s1.ax1x.com/2023/02/15/pS7DEOx.jpg" alt="pS7DEOx.jpg"></a></p>
+<p>Reflector: 从apiserver 监听（watch）特定类型的资源,拿到变更通知后,将其放入 DeltaFIFO 队列中</p>
+<p>Informer: 从DeltaFIFO 中弹出(pop)相应对象,然后通过 Indexer将对象和索引丢到本地 cache 中,再触发相应的事件处理函数(Resource Event Handlers)</p>
+<p>Indexer: 提供一个对象根据一定条件检索能力,典型的实现是通过 namespace&#x2F;name 来构造key,通过 Thread Safe Store 来存储对象</p>
+<p>WorkQueque: 使用延迟队列实现,在Resource Event Handlers中会完成将对象的key放入WorkQueue的过程,然后在自己的逻辑代码里消费这些key</p>
+<p>ClientSet: 提供资源的CURD能力,能与apiserver交互</p>
+<p>Resource Event Handlers: 在Resource Event Handlers中添加一些简单的过滤功能，能判断哪些对象需要加入到WorkQueque中处理,对于需要加到WorkQueque中的对象,就提取其key然后入队</p>
+<p>Worker: 指业务代码处理过程,可以直接收到WorkQueque中的任务,可以通过Indexer从本地缓存检索对象,通过ClientSet实现对象的增删改查逻辑</p>
+<h3 id="WorkQueue-源码分析"><a href="#WorkQueue-源码分析" class="headerlink" title="WorkQueue 源码分析"></a>WorkQueue 源码分析</h3><p>使用<code>WorkQueue</code>来处理<code>Event</code>,而不是直接在<code>Event</code>中编写业务逻辑是因为：Event创建的速度比处理它的速度要快，为了解决速度不一致的问题，所以引入WorkQueue机制。</p>
+<p>WorkQueue 一般使用延时队列实现,在<code>Resource Event Handlers</code>中完成将对象的key放入WorkQueue的过程，然后在自己的逻辑代码里从WorkQueue中消费这些key。</p>
+<p>client-go主要有三个队列,分别为普通队列,延迟队列和限速队列,后一个队列以前一个队列的实现为基础,层层添加新功能。通常我们直接使用限速队列。</p>
+<h4 id="普通队列"><a href="#普通队列" class="headerlink" title="普通队列"></a>普通队列</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Interface <span class="keyword">interface</span> &#123;</span><br><span class="line">	Add(item <span class="keyword">interface</span>&#123;&#125;) <span class="comment">//添加一个元素</span></span><br><span class="line">	Len() <span class="type">int</span>						  <span class="comment">//获取元素个数</span></span><br><span class="line">	Get() (item <span class="keyword">interface</span>&#123;&#125;, shutdown <span class="type">bool</span>) <span class="comment">//获取一个元素,shutdown 队列是否关闭</span></span><br><span class="line">	Done(item <span class="keyword">interface</span>&#123;&#125;) <span class="comment">//标记元素已经处理完毕</span></span><br><span class="line">	ShutDown()	 <span class="comment">//关闭队列</span></span><br><span class="line">	ShutDownWithDrain() <span class="comment">//关闭队列,但是等待队列中的元素处理完毕</span></span><br><span class="line">	ShuttingDown() <span class="type">bool</span> <span class="comment">//标记当前 channel 是否关闭</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// Type is a work queue (see the package comment).</span></span><br><span class="line"><span class="keyword">type</span> Type <span class="keyword">struct</span> &#123;</span><br><span class="line">	queue []t  <span class="comment">//定义元素的处理顺序,里面所有的元素在 dirty集合中应该都有,但是不能出现在processing集合中</span></span><br><span class="line">	dirty set <span class="comment">//标记所有需要被处理的元素</span></span><br><span class="line">	processing set <span class="comment">//当前正在被处理的元素,当处理完毕后,需要检查该元素是否在 dirty 集合中,如果在则添加到 queue 队列中</span></span><br><span class="line">	cond *sync.Cond</span><br><span class="line">	shuttingDown <span class="type">bool</span></span><br><span class="line">	drain        <span class="type">bool</span></span><br><span class="line">	metrics queueMetrics</span><br><span class="line">	unfinishedWorkUpdatePeriod time.Duration</span><br><span class="line">	clock                      clock.WithTicker</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// set是一个map,使用map key的唯一性当作set使用</span></span><br><span class="line"><span class="keyword">type</span> set <span class="keyword">map</span>[t]empty</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s set)</span></span> has(item t) <span class="type">bool</span> &#123;</span><br><span class="line">	_, exists := s[item]</span><br><span class="line">	<span class="keyword">return</span> exists</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s set)</span></span> insert(item t) &#123;</span><br><span class="line">	s[item] = empty&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s set)</span></span> <span class="built_in">delete</span>(item t) &#123;</span><br><span class="line">	<span class="built_in">delete</span>(s, item)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s set)</span></span> <span class="built_in">len</span>() <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>普通队列中包含几个比较重要的函数：</p>
+<p><code>Add</code>函数</p>
+<p>1.判断队列是否关闭,如果关闭直接返回</p>
+<p>2.判断是否已经在dirty集合中,如果存在则直接返回</p>
+<p>3.metrics 队列中添加该元素,同时dirty集合中添加该元素</p>
+<p>4.如果processing（元素已经存在正在被处理的元素集合中）则返回</p>
+<p>5.将该元素添加到队列中，并通知等待该Cond的goroutine</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(q *Type)</span></span> Add(item <span class="keyword">interface</span>&#123;&#125;) &#123;</span><br><span class="line">	q.cond.L.Lock()</span><br><span class="line">	<span class="keyword">defer</span> q.cond.L.Unlock()</span><br><span class="line">	<span class="keyword">if</span> q.shuttingDown &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> q.dirty.has(item) &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	q.metrics.add(item)</span><br><span class="line"></span><br><span class="line">	q.dirty.insert(item)</span><br><span class="line">	<span class="keyword">if</span> q.processing.has(item) &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	q.queue = <span class="built_in">append</span>(q.queue, item)</span><br><span class="line">	q.cond.Signal()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>Get</code>函数</p>
+<p>1.如果队列是空的,并且队列为开启状态,则等待cond，并且将该元素添加到 “当前正在被处理的元素集合”中,</p>
+<p>2.如果该队列开启了,但是队列为空，则直接返回</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(q *Type)</span></span> Get() (item <span class="keyword">interface</span>&#123;&#125;, shutdown <span class="type">bool</span>) &#123;</span><br><span class="line">	q.cond.L.Lock()</span><br><span class="line">	<span class="keyword">defer</span> q.cond.L.Unlock()</span><br><span class="line">	<span class="keyword">for</span> <span class="built_in">len</span>(q.queue) == <span class="number">0</span> &amp;&amp; !q.shuttingDown &#123;</span><br><span class="line">		q.cond.Wait()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(q.queue) == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="comment">// We must be shutting down.</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	item = q.queue[<span class="number">0</span>]</span><br><span class="line">	<span class="comment">// The underlying array still exists and reference this object, so the object will not be garbage collected.</span></span><br><span class="line">	q.queue[<span class="number">0</span>] = <span class="literal">nil</span>  <span class="comment">//设置为nil,让该元素可以被垃圾回收掉</span></span><br><span class="line">	q.queue = q.queue[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">	q.metrics.get(item)</span><br><span class="line"></span><br><span class="line">	q.processing.insert(item)</span><br><span class="line">	q.dirty.<span class="built_in">delete</span>(item)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> item, <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="延迟队列"><a href="#延迟队列" class="headerlink" title="延迟队列"></a>延迟队列</h4><p>延迟队列在普通队列的基础上,新增了<code>AddAfter</code>函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> delayingType <span class="keyword">struct</span> &#123;</span><br><span class="line">	Interface					</span><br><span class="line">	clock clock.Clock  <span class="comment">//计时器</span></span><br><span class="line">	stopCh <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">	stopOnce sync.Once</span><br><span class="line"></span><br><span class="line">	<span class="comment">// heartbeat ensures we wait no more than maxWait before firing</span></span><br><span class="line">	heartbeat clock.Ticker</span><br><span class="line"></span><br><span class="line">	<span class="comment">// waitingForAddCh is a buffered channel that feeds waitingForAdd</span></span><br><span class="line">	waitingForAddCh <span class="keyword">chan</span> *waitFor  <span class="comment">//传递 waitfor的channel,默认大小为1000</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// metrics counts the number of retries</span></span><br><span class="line">	metrics retryMetrics</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DelayingInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">	Interface</span><br><span class="line">	<span class="comment">// AddAfter adds an item to the workqueue after the indicated duration has passed</span></span><br><span class="line">	AddAfter(item <span class="keyword">interface</span>&#123;&#125;, duration time.Duration)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>延迟队列,主要使用<code>waitingLoop</code>实现延迟功能：</p>
+<p>循环分为两部分：</p>
+<p>1.从堆（优先队列,waitingForQueue）中拿一个数据,添加到通用队列中的逻辑</p>
+<p>2.通过<code>waitingForAddCh</code>拿到新的元素,然后通过判断时间,再将它放入到堆中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">func (q *delayingType) waitingLoop() &#123;</span><br><span class="line">	defer utilruntime.HandleCrash()</span><br><span class="line"></span><br><span class="line">	// Make a placeholder channel to use when there are no items in our list</span><br><span class="line">	never := make(&lt;-chan time.Time)</span><br><span class="line"></span><br><span class="line">	// 创建一个计时器</span><br><span class="line">	var nextReadyAtTimer clock.Timer</span><br><span class="line"></span><br><span class="line">  // 初始化一个优先级队列</span><br><span class="line">	waitingForQueue := &amp;waitForPriorityQueue&#123;&#125;</span><br><span class="line">	heap.Init(waitingForQueue)</span><br><span class="line"></span><br><span class="line">	waitingEntryByData := map[t]*waitFor&#123;&#125;</span><br><span class="line"></span><br><span class="line">	for &#123;</span><br><span class="line">		if q.Interface.ShuttingDown() &#123;</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		now := q.clock.Now()</span><br><span class="line"></span><br><span class="line">		// Add ready entries</span><br><span class="line">		// 从堆中取出数据,判断时间是否已到达预定时间</span><br><span class="line">		// 如果没有到,就进入下次循环</span><br><span class="line">		for waitingForQueue.Len() &gt; 0 &#123;</span><br><span class="line">			entry := waitingForQueue.Peek().(*waitFor)</span><br><span class="line">			if entry.readyAt.After(now) &#123;</span><br><span class="line">				break</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			entry = heap.Pop(waitingForQueue).(*waitFor)</span><br><span class="line">			q.Add(entry.data)</span><br><span class="line">			delete(waitingEntryByData, entry.data)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// Set up a wait for the first item&#x27;s readyAt (if one exists)</span><br><span class="line">		nextReadyAt := never</span><br><span class="line">		if waitingForQueue.Len() &gt; 0 &#123;</span><br><span class="line">			if nextReadyAtTimer != nil &#123;</span><br><span class="line">				nextReadyAtTimer.Stop()</span><br><span class="line">			&#125;</span><br><span class="line">			entry := waitingForQueue.Peek().(*waitFor)</span><br><span class="line">			nextReadyAtTimer = q.clock.NewTimer(entry.readyAt.Sub(now))</span><br><span class="line">			nextReadyAt = nextReadyAtTimer.C()</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		select &#123;</span><br><span class="line">		case &lt;-q.stopCh:</span><br><span class="line">			return</span><br><span class="line"></span><br><span class="line">		case &lt;-q.heartbeat.C():</span><br><span class="line">			// continue the loop, which will add ready items</span><br><span class="line"></span><br><span class="line">		case &lt;-nextReadyAt:</span><br><span class="line">			// continue the loop, which will add ready items</span><br><span class="line"></span><br><span class="line">		case waitEntry := &lt;-q.waitingForAddCh:</span><br><span class="line">			if waitEntry.readyAt.After(q.clock.Now()) &#123;</span><br><span class="line">				insert(waitingForQueue, waitingEntryByData, waitEntry)</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				q.Add(waitEntry.data)</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			drained := false</span><br><span class="line">			for !drained &#123;</span><br><span class="line">				select &#123;</span><br><span class="line">				case waitEntry := &lt;-q.waitingForAddCh:</span><br><span class="line">					if waitEntry.readyAt.After(q.clock.Now()) &#123;</span><br><span class="line">						insert(waitingForQueue, waitingEntryByData, waitEntry)</span><br><span class="line">					&#125; else &#123;</span><br><span class="line">						q.Add(waitEntry.data)</span><br><span class="line">					&#125;</span><br><span class="line">				default:</span><br><span class="line">					drained = true</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>AddAfter</code>函数的作用是在指定的延迟时长到达之后,在 work queue中新增一个元素</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AddAfter adds the given item to the work queue after the given delay</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(q *delayingType)</span></span> AddAfter(item <span class="keyword">interface</span>&#123;&#125;, duration time.Duration) &#123;</span><br><span class="line">	<span class="comment">// don&#x27;t add if we&#x27;re already shutting down</span></span><br><span class="line">	<span class="keyword">if</span> q.ShuttingDown() &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	q.metrics.retry()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// immediately add things with no delay</span></span><br><span class="line">	<span class="keyword">if</span> duration &lt;= <span class="number">0</span> &#123;</span><br><span class="line">		q.Add(item)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> &lt;-q.stopCh:</span><br><span class="line">		<span class="comment">// unblock if ShutDown() is called</span></span><br><span class="line">	<span class="keyword">case</span> q.waitingForAddCh &lt;- &amp;waitFor&#123;data: item, readyAt: q.clock.Now().Add(duration)&#125;:</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="限速队列"><a href="#限速队列" class="headerlink" title="限速队列"></a>限速队列</h4><p>限速器的目的：根据相应的算法获取元素的延迟时间,然后利用延迟队列来控制队列的速度</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RateLimitingInterface is an interface that rate limits items being added to the queue.</span></span><br><span class="line"><span class="keyword">type</span> RateLimitingInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">	DelayingInterface <span class="comment">//内嵌延迟队列</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// AddRateLimited adds an item to the workqueue after the rate limiter says it&#x27;s ok</span></span><br><span class="line">	AddRateLimited(item <span class="keyword">interface</span>&#123;&#125;)  <span class="comment">//使用限速方式往队列中加入一个元素</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Forget indicates that an item is finished being retried.  Doesn&#x27;t matter whether it&#x27;s for perm failing</span></span><br><span class="line">	<span class="comment">// or for success, we&#x27;ll stop the rate limiter from tracking it.  This only clears the `rateLimiter`, you</span></span><br><span class="line">	<span class="comment">// still have to call `Done` on the queue.</span></span><br><span class="line">	Forget(item <span class="keyword">interface</span>&#123;&#125;)  <span class="comment">//标识一个元素结束重试</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// NumRequeues returns back how many times the item was requeued</span></span><br><span class="line">	NumRequeues(item <span class="keyword">interface</span>&#123;&#125;) <span class="type">int</span> <span class="comment">//标识这个元素被处理了多少次</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 限速器的定义</span></span><br><span class="line"><span class="keyword">type</span> RateLimiter <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// When gets an item and gets to decide how long that item should wait</span></span><br><span class="line">	When(item <span class="keyword">interface</span>&#123;&#125;) time.Duration</span><br><span class="line">	<span class="comment">// Forget indicates that an item is finished being retried.  Doesn&#x27;t matter whether it&#x27;s for failing</span></span><br><span class="line">	<span class="comment">// or for success, we&#x27;ll stop tracking it</span></span><br><span class="line">	Forget(item <span class="keyword">interface</span>&#123;&#125;)</span><br><span class="line">	<span class="comment">// NumRequeues returns back how many failures the item has had</span></span><br><span class="line">	NumRequeues(item <span class="keyword">interface</span>&#123;&#125;) <span class="type">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>RateLimiter</code>接口存在五个实现:</p>
+<p>BucketRateLimiter: 使用Go语言标准库 “golfing.org&#x2F;x&#x2F;time&#x2F;rate.Limiter”包实现,BucketRateLimiter实例化的时候,会设置令牌桶相关参数,比如设置令牌桶里面最多有100个令桶,每秒发放10个令牌</p>
+<p>ItemExponentialFailureRateLimiter: 失败次数越多,限速越长,而且是呈指数级增长的一种限速器</p>
+<p>ItemFastSlowRateLimiter: 快慢限速器,快慢指的是定义一个阈值,达到阈值之前快速重试,超过了就满满重试</p>
+<p>MaxOfRateLimiter: 通过维护多个限速器列表,返回其中最严格的一个延迟</p>
+<p>WithMaxWaitRateLimiter: 在其他限速器上包装一个最大延迟的属性,如果到了最大延时,则直接返回</p>
+<p>Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,我们可以在自己的逻辑代码里从 WorkQueue 中消费这些 Key。延迟队列实现了 item的延迟入队效果,内部是一个”优先级队列”,用了”最小堆”（有序完全二叉树）,所以”在requeueAfter中指定一个凋谐过程1分钟后重试”的实现原理也就清晰了。</p>
+<h3 id="DeltaFIFO-源码分析"><a href="#DeltaFIFO-源码分析" class="headerlink" title="DeltaFIFO 源码分析"></a>DeltaFIFO 源码分析</h3><p>DeltaFIFO 是一个生产者-消费者的队列,生产者是Reflector,消费者是Pop函数。</p>
+<p>DeltaFIFO 的数据来源为 Reflector，通过 Pop 操作消费数据，消费的数据一方面存储到 Indexer 中，另一方面可以通过 Informer 的 handler 进行处理，Informer 的 handler 处理的数据需要与存储在 Indexer 中的数据匹配。需要注意的是，Pop 的单位是一个 Deltas，而不是 Delta。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Queue <span class="keyword">interface</span> &#123;</span><br><span class="line">	Store</span><br><span class="line">	Pop(PopProcessFunc) (<span class="keyword">interface</span>&#123;&#125;, <span class="type">error</span>)</span><br><span class="line">	AddIfNotPresent(<span class="keyword">interface</span>&#123;&#125;) <span class="type">error</span></span><br><span class="line">	HasSynced() <span class="type">bool</span></span><br><span class="line">	Close()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Store <span class="keyword">interface</span> &#123;</span><br><span class="line">	Add(obj <span class="keyword">interface</span>&#123;&#125;) <span class="type">error</span></span><br><span class="line">	Update(obj <span class="keyword">interface</span>&#123;&#125;) <span class="type">error</span></span><br><span class="line">	Delete(obj <span class="keyword">interface</span>&#123;&#125;) <span class="type">error</span></span><br><span class="line">	List() []<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	ListKeys() []<span class="type">string</span></span><br><span class="line">	Get(obj <span class="keyword">interface</span>&#123;&#125;) (item <span class="keyword">interface</span>&#123;&#125;, exists <span class="type">bool</span>, err <span class="type">error</span>)</span><br><span class="line">	GetByKey(key <span class="type">string</span>) (item <span class="keyword">interface</span>&#123;&#125;, exists <span class="type">bool</span>, err <span class="type">error</span>)</span><br><span class="line">	Replace([]<span class="keyword">interface</span>&#123;&#125;, <span class="type">string</span>) <span class="type">error</span></span><br><span class="line">	Resync() <span class="type">error</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Delta <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type   DeltaType</span><br><span class="line">	Object <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Deltas []Delta</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DeltaFIFO <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	cond sync.Cond</span><br><span class="line">	items <span class="keyword">map</span>[<span class="type">string</span>]Deltas</span><br><span class="line">	queue []<span class="type">string</span></span><br><span class="line">	populated <span class="type">bool</span></span><br><span class="line">	initialPopulationCount <span class="type">int</span></span><br><span class="line">	keyFunc KeyFunc</span><br><span class="line">	knownObjects KeyListerGetter</span><br><span class="line">	closed <span class="type">bool</span></span><br><span class="line">	emitDeltaTypeReplaced <span class="type">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DeltaType 是一个字符串类型,对应的是Added描述一个Delta类型</span></span><br><span class="line"><span class="keyword">type</span> DeltaType <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Change type definition</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	Added   DeltaType = <span class="string">&quot;Added&quot;</span></span><br><span class="line">	Updated DeltaType = <span class="string">&quot;Updated&quot;</span></span><br><span class="line">	Deleted DeltaType = <span class="string">&quot;Deleted&quot;</span></span><br><span class="line">	Replaced DeltaType = <span class="string">&quot;Replaced&quot;</span></span><br><span class="line">	Sync DeltaType = <span class="string">&quot;Sync&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>DetlaFIFO 同时实现了 Queue 和 Store 接口，使用 Deltas 保存了对象状态的变更信息(如Pod的删除或添加)，Deltas 缓存了针对相同对象的多个状态变更信息,如 Pod 的 Deltas[0]可能更新了标签，Deltas[1]可能删除了该 Pod。最老的状态变更信息为 Oldest()，最新的状态变更信息为 Newest()，使用中，获取 DeltaFIFO 中对象的 key 以及获取 DeltaFIFO 都以最新状态为准。</p>
+<p>[^DeltaFIFO结构图如下]: 图来源于《Kubernetes Operator 开发进阶》</p>
+<div align="center">
+        <img src="https://s1.ax1x.com/2023/02/19/pSO9kKf.png">  
+</div>
+
+<h4 id="核心函数"><a href="#核心函数" class="headerlink" title="核心函数"></a>核心函数</h4><p>store接口中的<code>Add() Update()</code>等函数都会调用<code>queueActionLocked</code>函数</p>
+<p><code>queueActionLocked</code>函数的作用主要是构建一个Delta添加到[]Deltas中,其中包含一个去重判断,如果已经存在,则只更新items map中对应这个key的[]Deltas</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *DeltaFIFO)</span></span> queueActionLocked(actionType DeltaType, obj <span class="keyword">interface</span>&#123;&#125;) <span class="type">error</span> &#123;</span><br><span class="line">	id, err := f.KeyOf(obj)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> KeyError&#123;obj, err&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	oldDeltas := f.items[id]</span><br><span class="line">	newDeltas := <span class="built_in">append</span>(oldDeltas, Delta&#123;actionType, obj&#125;)</span><br><span class="line">	newDeltas = dedupDeltas(newDeltas)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(newDeltas) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> _, exists := f.items[id]; !exists &#123;</span><br><span class="line">			f.queue = <span class="built_in">append</span>(f.queue, id)</span><br><span class="line">		&#125;</span><br><span class="line">		f.items[id] = newDeltas</span><br><span class="line">		f.cond.Broadcast()</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// This never happens, because dedupDeltas never returns an empty list</span></span><br><span class="line">		<span class="comment">// when given a non-empty list (as it is here).</span></span><br><span class="line">		<span class="comment">// If somehow it happens anyway, deal with it but complain.</span></span><br><span class="line">		<span class="keyword">if</span> oldDeltas == <span class="literal">nil</span> &#123;</span><br><span class="line">			klog.Errorf(<span class="string">&quot;Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; ignoring&quot;</span>, id, oldDeltas, obj)</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">		&#125;</span><br><span class="line">		klog.Errorf(<span class="string">&quot;Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; breaking invariant by storing empty Deltas&quot;</span>, id, oldDeltas, obj)</span><br><span class="line">		f.items[id] = newDeltas</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; broke DeltaFIFO invariant by storing empty Deltas&quot;</span>, id, oldDeltas, obj)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>Pop</code> 函数会按照元素的添加或更新顺序有序返回一个元素(Deltas),在队列为空时会阻塞。Pop过程中会先从队列中删除一个元素后返回,如果处理失败了,需要通过 AddIfNotPresent函数将这个元素重新加回到队列汇总。</p>
+<p>Pop的参数是 Type PopProcessFunc func(interface{}) error 类型的process,在Pop函数中,直接将队列中第一个元素出队,然后丢给process处理,如果处理失败会重新入队,但是这个 Deltas 和对应的错误信息会被返回</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">func (f *DeltaFIFO) Pop(process PopProcessFunc) (interface&#123;&#125;, error) &#123;</span><br><span class="line">	f.lock.Lock()</span><br><span class="line">	defer f.lock.Unlock()</span><br><span class="line">	for &#123;</span><br><span class="line">		for len(f.queue) == 0 &#123;</span><br><span class="line">			// When the queue is empty, invocation of Pop() is blocked until new item is enqueued.</span><br><span class="line">			// When Close() is called, the f.closed is set and the condition is broadcasted.</span><br><span class="line">			// Which causes this loop to continue and return from the Pop().</span><br><span class="line">			if f.closed &#123;</span><br><span class="line">				return nil, ErrFIFOClosed</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			f.cond.Wait()</span><br><span class="line">		&#125;</span><br><span class="line">		isInInitialList := !f.hasSynced_locked()</span><br><span class="line">		id := f.queue[0]</span><br><span class="line">		f.queue = f.queue[1:]</span><br><span class="line">		depth := len(f.queue)</span><br><span class="line">		if f.initialPopulationCount &gt; 0 &#123;</span><br><span class="line">			f.initialPopulationCount--</span><br><span class="line">		&#125;</span><br><span class="line">		item, ok := f.items[id]</span><br><span class="line">		if !ok &#123;</span><br><span class="line">			// This should never happen</span><br><span class="line">			klog.Errorf(&quot;Inconceivable! %q was in f.queue but not f.items; ignoring.&quot;, id)</span><br><span class="line">			continue</span><br><span class="line">		&#125;</span><br><span class="line">		delete(f.items, id)</span><br><span class="line">		// Only log traces if the queue depth is greater than 10 and it takes more than</span><br><span class="line">		// 100 milliseconds to process one item from the queue.</span><br><span class="line">		// Queue depth never goes high because processing an item is locking the queue,</span><br><span class="line">		// and new items can&#x27;t be added until processing finish.</span><br><span class="line">		// https://github.com/kubernetes/kubernetes/issues/103789</span><br><span class="line">		if depth &gt; 10 &#123;</span><br><span class="line">			trace := utiltrace.New(&quot;DeltaFIFO Pop Process&quot;,</span><br><span class="line">				utiltrace.Field&#123;Key: &quot;ID&quot;, Value: id&#125;,</span><br><span class="line">				utiltrace.Field&#123;Key: &quot;Depth&quot;, Value: depth&#125;,</span><br><span class="line">				utiltrace.Field&#123;Key: &quot;Reason&quot;, Value: &quot;slow event handlers blocking the queue&quot;&#125;)</span><br><span class="line">			defer trace.LogIfLong(100 * time.Millisecond)</span><br><span class="line">		&#125;</span><br><span class="line">		err := process(item, isInInitialList)</span><br><span class="line">		if e, ok := err.(ErrRequeue); ok &#123;</span><br><span class="line">			f.addIfNotPresent(id, item)</span><br><span class="line">			err = e.Err</span><br><span class="line">		&#125;</span><br><span class="line">		// Don&#x27;t need to copyDeltas here, because we&#x27;re transferring</span><br><span class="line">		// ownership to the caller.</span><br><span class="line">		return item, err</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>Replace</code> 主要做了两件事:</p>
+<p>1.给传入的对象列表添加一个 Sync&#x2F;Replace DeltaType的Delta</p>
+<p>2.执行一些与删除相关的程序逻辑</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *DeltaFIFO)</span></span> Replace(list []<span class="keyword">interface</span>&#123;&#125;, _ <span class="type">string</span>) <span class="type">error</span> &#123;</span><br><span class="line">	f.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> f.lock.Unlock()</span><br><span class="line">	keys := <span class="built_in">make</span>(sets.String, <span class="built_in">len</span>(list))</span><br><span class="line"></span><br><span class="line">	<span class="comment">// keep backwards compat for old clients</span></span><br><span class="line">	action := Sync</span><br><span class="line">	<span class="keyword">if</span> f.emitDeltaTypeReplaced &#123;</span><br><span class="line">		action = Replaced</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Add Sync/Replaced action for each new item.</span></span><br><span class="line">	<span class="keyword">for</span> _, item := <span class="keyword">range</span> list &#123;</span><br><span class="line">		key, err := f.KeyOf(item)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> KeyError&#123;item, err&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		keys.Insert(key)</span><br><span class="line">		<span class="keyword">if</span> err := f.queueActionLocked(action, item); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;couldn&#x27;t enqueue object: %v&quot;</span>, err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> f.knownObjects == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Do deletion detection against our own list.</span></span><br><span class="line">		queuedDeletions := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> k, oldItem := <span class="keyword">range</span> f.items &#123;</span><br><span class="line">			<span class="keyword">if</span> keys.Has(k) &#123;</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// Delete pre-existing items not in the new list.</span></span><br><span class="line">			<span class="comment">// This could happen if watch deletion event was missed while</span></span><br><span class="line">			<span class="comment">// disconnected from apiserver.</span></span><br><span class="line">			<span class="keyword">var</span> deletedObj <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">			<span class="keyword">if</span> n := oldItem.Newest(); n != <span class="literal">nil</span> &#123;</span><br><span class="line">				deletedObj = n.Object</span><br><span class="line">			&#125;</span><br><span class="line">			queuedDeletions++</span><br><span class="line">			<span class="keyword">if</span> err := f.queueActionLocked(Deleted, DeletedFinalStateUnknown&#123;k, deletedObj&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> err</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> !f.populated &#123;</span><br><span class="line">			f.populated = <span class="literal">true</span></span><br><span class="line">			<span class="comment">// While there shouldn&#x27;t be any queued deletions in the initial</span></span><br><span class="line">			<span class="comment">// population of the queue, it&#x27;s better to be on the safe side.</span></span><br><span class="line">			f.initialPopulationCount = keys.Len() + queuedDeletions</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Detect deletions not already in the queue.</span></span><br><span class="line">	knownKeys := f.knownObjects.ListKeys()</span><br><span class="line">	queuedDeletions := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _, k := <span class="keyword">range</span> knownKeys &#123;</span><br><span class="line">		<span class="keyword">if</span> keys.Has(k) &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		deletedObj, exists, err := f.knownObjects.GetByKey(k)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			deletedObj = <span class="literal">nil</span></span><br><span class="line">			klog.Errorf(<span class="string">&quot;Unexpected error %v during lookup of key %v, placing DeleteFinalStateUnknown marker without object&quot;</span>, err, k)</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> !exists &#123;</span><br><span class="line">			deletedObj = <span class="literal">nil</span></span><br><span class="line">			klog.Infof(<span class="string">&quot;Key %v does not exist in known objects store, placing DeleteFinalStateUnknown marker without object&quot;</span>, k)</span><br><span class="line">		&#125;</span><br><span class="line">		queuedDeletions++</span><br><span class="line">		<span class="keyword">if</span> err := f.queueActionLocked(Deleted, DeletedFinalStateUnknown&#123;k, deletedObj&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !f.populated &#123;</span><br><span class="line">		f.populated = <span class="literal">true</span></span><br><span class="line">		f.initialPopulationCount = keys.Len() + queuedDeletions</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Indexer-和-ThreadSafeStore"><a href="#Indexer-和-ThreadSafeStore" class="headerlink" title="Indexer 和 ThreadSafeStore"></a>Indexer 和 ThreadSafeStore</h3><p>Index 主要为对象提供根据一定条件进行检索的能力,比如通过namespace&#x2F;name来构造key,通过ThreadSafeStore来存储对象。Index 主要依赖ThreadSafeStore的实现,是client-go 提供的一种缓存机制,通过检索本地缓存可以有效降低apiserver的压力。</p>
+<p>Indexer主要在Store接口的基础上拓展了对象的检索功能,而ThreadSafeStore才是Indexer的核心逻辑</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">type ThreadSafeStore interface &#123;</span><br><span class="line">	Add(key string, obj interface&#123;&#125;)</span><br><span class="line">	Update(key string, obj interface&#123;&#125;)</span><br><span class="line">	Delete(key string)</span><br><span class="line">	Get(key string) (item interface&#123;&#125;, exists bool)</span><br><span class="line">	List() []interface&#123;&#125;</span><br><span class="line">	ListKeys() []string</span><br><span class="line">	Replace(map[string]interface&#123;&#125;, string)</span><br><span class="line">	Index(indexName string, obj interface&#123;&#125;) ([]interface&#123;&#125;, error)</span><br><span class="line">	IndexKeys(indexName, indexedValue string) ([]string, error)</span><br><span class="line">	ListIndexFuncValues(name string) []string</span><br><span class="line">	ByIndex(indexName, indexedValue string) ([]interface&#123;&#125;, error)</span><br><span class="line">	GetIndexers() Indexers</span><br><span class="line"></span><br><span class="line">	// AddIndexers adds more indexers to this store.  If you call this after you already have data</span><br><span class="line">	// in the store, the results are undefined.</span><br><span class="line">	AddIndexers(newIndexers Indexers) error</span><br><span class="line">	// Resync is a no-op and is deprecated</span><br><span class="line">	Resync() error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h3><p>《Kubernetes Operator 开发进阶》</p>
+<p><a target="_blank" rel="noopener" href="https://www.qikqiak.com/k8strain/k8s-code/client-go/deltafifo/">DeltaFIFO</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>John Doe</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2023/02/12/Client-go/">https://ananonymousfriend.github.io/2023/02/12/Client-go/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"># 学习笔记</a>
+                    
+                        <a href="/tags/Kubernetes/"># Kubernetes</a>
+                    
+                        <a href="/tags/Operator%E5%BC%80%E5%8F%91/"># Operator开发</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/02/04/Kubernetes%20Operator%20%E5%BC%80%E5%8F%91/">Kubernetes Operator 开发</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© John Doe | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
