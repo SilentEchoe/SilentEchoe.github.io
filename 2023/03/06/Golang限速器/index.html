@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>Golang限速器 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Golang限速器</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 6, 2023&nbsp;&nbsp;14:54:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Go/">Go</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="限速器"><a href="#限速器" class="headerlink" title="限速器"></a>限速器</h3><p>在高并发的系统中,限流已经成为必不可少的功能，它成为提升服务稳定性非常重要的组件，可以用于限制请求速率，保护服务以免服务过载。</p>
+<p>限流器有很多种实现方式，常见的限流算法有<strong>固定窗口,滑动窗口,漏桶，令牌桶等</strong>。Golang 官方提供的扩展库自带了限流算法的实现: golang.org&#x2F;x&#x2F;time&#x2F;rate 使用的是令牌桶。</p>
+<p>构建限流器</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NewLimiter returns a new Limiter that allows events up to rate r and permits</span></span><br><span class="line"><span class="comment">// bursts of at most b tokens.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLimiter</span><span class="params">(r Limit, b <span class="type">int</span>)</span></span> *Limiter &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Limiter&#123;</span><br><span class="line">		limit: r,</span><br><span class="line">		burst: b,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// r Limit 设置限流器Limiter的Limit字段，代表每秒可以向Token桶中产生多少Token，Limit实际上是float64的别名</span></span><br><span class="line"><span class="comment">// b int 代表Token桶的容量大小,这代表:构建出一个大小为100的令牌桶，以每秒1个Token的速率向桶中放置Token</span></span><br><span class="line">limiter := rate.NewLimiter(<span class="number">1</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<p>使用限流器</p>
+<p>Limiter提供了三类方法供程序消费Token,可以每次消费一个消费,也可以每次消费多个Token</p>
+<p>Wait&#x2F;waitN (Wait 实际上就是 <code>WaitN(ctx,1)</code>)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用Wait方法消费Token时,如果此时桶内Token数组不足(小于N),那么Wait方法会组塞一段时间,直到Token满足条件</span></span><br><span class="line"><span class="comment">// Wait 方法存有一个 context参数，可以设置 context的 Deadline 或者 Timeout,来决定 Wait(等待)的最长时间</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> Wait(ctx context.Context) (err <span class="type">error</span>)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> WaitN(ctx context.Context, n <span class="type">int</span>) (err <span class="type">error</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">//代表每100ms往桶中放一个Token,本质上是一秒钟往桶里放10个</span></span><br><span class="line">	limit := rate.Every(<span class="number">100</span> * time.Millisecond)</span><br><span class="line">	limiter := rate.NewLimiter(limit, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待获取到桶中的令牌</span></span><br><span class="line">	err := limiter.Wait(context.Background())</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;Error:&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置一秒的等待超时事件</span></span><br><span class="line">	ctx, _ := context.WithTimeout(context.Background(), time.Second*<span class="number">1</span>)</span><br><span class="line">	err = limiter.Wait(ctx)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;Error:&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Allow&#x2F;AllowN</p>
+<p>Allow 实际上就是对 <code>AllowN(time.Now(),1)</code> 进行简化的函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AllowN 截止到某一个时刻，目前桶中的Token是否至少为n个,满足则返回true,同时从桶中消费n个Token。如果不满足则不消费Token,返回false</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> Allow() <span class="type">bool</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> AllowN(now time.Time, n <span class="type">int</span>) <span class="type">bool</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前时间是否存在2个Token</span></span><br><span class="line"><span class="keyword">if</span> limiter.AllowN(time.Now(), <span class="number">2</span>) &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;event allowed&quot;</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;event not allowed&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Reserve&#x2F;ReserveN</p>
+<p>Reserve 相当于 <code>ReserveN(time.Now(), 1)</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">r := limiter.Reserve()</span><br><span class="line"><span class="keyword">if</span> !r.OK() &#123;</span><br><span class="line">    <span class="comment">// Not allowed to act! Did you remember to set lim.burst to be &gt; 0 ?</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 执行Reserve后可以调用 Delay方法,这是一个时间类型，反映了需要等待的时间</span></span><br><span class="line">time.Sleep(r.Delay())</span><br><span class="line"><span class="comment">// 执行相关逻辑</span></span><br><span class="line">Work()</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果不想等待,可以调用 Cancel 方法,它可以将Token归还</span></span><br><span class="line">r.Cancel()</span><br></pre></td></tr></table></figure>
+
+<p>动态调整速率和桶大小</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Limiter 支持创建后动态调整速率和桶大小</span></span><br><span class="line"><span class="comment">//SetLimit更改Token的速率</span></span><br><span class="line">limit := rate.Every(<span class="number">100</span> * time.Millisecond)</span><br><span class="line">limiter := rate.NewLimiter(limit, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">limit2 := rate.Every(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">limiter.SetLimit(limit2)</span><br><span class="line"></span><br><span class="line"><span class="comment">//SetBurst改变Token桶大小</span></span><br><span class="line">limiter.SetBurst(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h3><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1847918">Golang官方限流器的用法详解</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2023/03/06/Golang%E9%99%90%E9%80%9F%E5%99%A8/">https://ananonymousfriend.github.io/2023/03/06/Golang%E9%99%90%E9%80%9F%E5%99%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Go/"># Go</a>
+                    
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"># 学习笔记</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/02/12/Client-go/">Client-go 源码分析</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
