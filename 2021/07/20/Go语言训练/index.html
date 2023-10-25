@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>Go 语言康复训练 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Go 语言康复训练</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">July 20, 2021&nbsp;&nbsp;22:23:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Go/">Go</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="Go语言基础"><a href="#Go语言基础" class="headerlink" title="Go语言基础"></a>Go语言基础</h1><h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>数组是由相同类型元素的集合组成的数据结构，计算机会为数组分配一块连续的内存来保存其中的元素。我们可以利用数组中元素的索引快速访问特定元素，常见的数组大多都是一维的线性数组，多维数组在数值和图形计算领域有比较常见的应用。</p>
+<p>下例先以一维数组为例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 语言中的数组有两种创建方式</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//1.显式制定数组大小</span></span><br><span class="line">arr := [<span class="number">3</span>]<span class="type">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.使用[...]T声明数组</span></span><br><span class="line">arr := [...]<span class="type">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.声明数组，但不完全初始化值</span></span><br><span class="line"><span class="keyword">var</span> arry = [<span class="number">3</span>]<span class="type">int</span>&#123;&#125;</span><br><span class="line">arry[<span class="number">0</span>] = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>上例前两种不同的声明会导致编译器做出完全不同的处理：</p>
+<p>如果使用第一种<code>[3]T</code>，那么变量的类型在编译进行到<strong>类型检查</strong>阶段就会被提取出来，然后创建包含数组大小的结构体。</p>
+<p>如果使用<code>[...]T</code>方式声明，编译器会先对数组的大小进行推导。但是要强调的是，[…]T 这种方式只是Go语言给我们提供的语法糖，不想计算数组中的元素时可以使用这种方法，这两种方法在运行期间得到的结果是完全相同的。</p>
+<h4 id="数组堆栈分配"><a href="#数组堆栈分配" class="headerlink" title="数组堆栈分配"></a>数组堆栈分配</h4><p>对于一个由字面量组成的数组，根据数组元素数量的不同，编译器会在负责初始化字面量时候有不同的优化：</p>
+<p>1.当元素小于或等于 4 个时，会直接将数组中的元素放置在栈上；</p>
+<p>2.当元素数量大于 4 个时，会将数组中的元素放置到静态区并在运行时取出；(变量在静态存储区初始化然后拷贝到栈上)</p>
+<blockquote>
+<p>静态存储区：内存在程序编译的时候就已经分配好，这块内存在程序的整个运行期间都存在。它主要存放静态数据、全局数据和常量。</p>
+</blockquote>
+<p>无论在栈上还是静态存储区，数组在内存中都是一连串的内存空间，通过数组开头的指针，元素数量以及元素类型占的空间大小表示数组。</p>
+<p>在使用数组时，要特别注意<strong>访问越界</strong>的问题。编译器无法提前发生错误，这种错误会在Go语言运行时出现。</p>
+<h2 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h2><p>Go语言中更常用的数组结构是切片，即动态数组。我们可以在切片中追加元素，切片会在容量不足时自动扩容。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.通过下标的方式获得数组或者切片的一部分</span></span><br><span class="line">arr := [...]<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">slice := arr[<span class="number">0</span>:<span class="number">3</span>]</span><br><span class="line">fmt.Println(slice)</span><br><span class="line"></span><br><span class="line">#输出：[<span class="number">1</span> <span class="number">2</span> <span class="number">3</span>]</span><br><span class="line"></span><br><span class="line">slice := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">slice2 := slice[<span class="number">0</span>:<span class="number">3</span>]</span><br><span class="line">fmt.Println(slice2)</span><br><span class="line"></span><br><span class="line">#输出：[<span class="number">1</span> <span class="number">2</span> <span class="number">3</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.使用字面量初始化新的切片</span></span><br><span class="line">slice := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.使用make关键字</span></span><br><span class="line">slice := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>下标：使用下标初始化切片不会拷贝原数组或原切片中的数据，它只会创建一个指向原数组的切片结构体，<strong>所以修改新切片的数组也会修改原切片</strong>。</p>
+<p>字面量：使用字面量，大部分工作会在编译期间完成。</p>
+<p>关键字： 使用 make 关键字时，很多工作需要运行时的参与，调用方必须向 make 函数传入切片的大小及可选容量，这是为了确保</p>
+<p>1.切片的大小和容量是否足够小</p>
+<p>2.切片是否发生了逃逸，最终在堆中初始化。</p>
+<p>如果切片非常大，运行时会直接在堆上初始化，如果切片不会发生逃逸并且非常小，例如小于等于4个元素，则直接在栈上或静态存储区创建数组。</p>
+<blockquote>
+<p>大于32 KB 的对象会在堆中初始化。</p>
+</blockquote>
+<h4 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h4><p>使用<code>len</code>和<code>cap</code>可以获取切片的长度或容量。切片的操作基本都是在编译期间完成的，除了访问切片的长度，容量或其中的元素外，编译器也会将包含<code>range</code>关键字的遍历转换成形式更简单的循环。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">slice := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>)</span><br><span class="line">fmt.Println(<span class="built_in">len</span>(slice)) <span class="comment">// 10</span></span><br><span class="line">fmt.Println(<span class="built_in">cap</span>(slice)) <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="追加和扩容"><a href="#追加和扩容" class="headerlink" title="追加和扩容"></a>追加和扩容</h4><p>go 语言中切片食用 append 关键字向切片追加元素，在中间代码生成阶段会根据返回值是否会覆盖原变量，选择进入两种流程</p>
+<p>1.第一种，会覆盖原切片</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">slice = <span class="built_in">append</span>(slice, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">fmt.Println(slice) <span class="comment">// [1 2 3 1 2 3]</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>下图来源《Go语言设计与实现》</p>
+<p><img src="https://raw.githubusercontent.com/AnAnonymousFriend/images/main/image-20231021003500649.png" alt="image-20231021003500649"></p>
+<p>上图可以看到，当切片追加元素时如果容量不足，则会创建一个新切片并将旧切片与追加元素放入一个新的切片。如果我们选择覆盖原有的变量，就不需要担心切片发生拷贝影响性能，Go语言编译器会对这种常见的情况做出优化。</p>
+<p>扩容策略：</p>
+<ol>
+<li>如果期望容量大于当前容量的两倍就会使用期望容量；</li>
+<li>如果当前切片的长度小于 1024 就会将容量翻倍；</li>
+<li>如果当前切片的长度大于 1024 就会每次增加 25% 的容量，直到新容量大于期望容量；</li>
+</ol>
+<blockquote>
+<p>内存对齐：Go语言会将待申请的内存向上取整，让数组中的整数可以提高内存的分配效率并减少碎片。</p>
+</blockquote>
+<h4 id="拷贝切片"><a href="#拷贝切片" class="headerlink" title="拷贝切片"></a>拷贝切片</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 copy(a,b) 的形式对切片进行拷贝</span></span><br><span class="line"></span><br><span class="line">slice1 := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">slice2 := []<span class="type">int</span>&#123;<span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>&#125;</span><br><span class="line"><span class="built_in">copy</span>(slice2, slice1) <span class="comment">// 只会复制slice1的前3个元素到slice2中</span></span><br><span class="line">fmt.Println(slice2)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>大切片上执行拷贝操作时一定要注意对性能的影响，因为整块拷贝内存会占用非常多的资源。</p>
+<h2 id="哈希"><a href="#哈希" class="headerlink" title="哈希"></a>哈希</h2><p>数组用于表示元素的序列，哈希则表示的是键值对之间映射的关系。想要实现一个性能优异的哈希表，需要注意两个关键点——哈希函数和冲突解决办法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字面量初始化</span></span><br><span class="line">hash := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>&#123;<span class="string">&quot;a&quot;</span>: <span class="number">1</span>&#125;</span><br><span class="line">fmt.Println(hash)</span><br><span class="line"></span><br><span class="line"><span class="comment">//make 初始化</span></span><br><span class="line">hash := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)</span><br><span class="line">fmt.Println(hash)</span><br></pre></td></tr></table></figure>
+
+<p>当创建的哈希被分配到栈上并且其容器小于<code>BUCKETSIZE = 8</code> 时，Go 语言在编译阶段会对小容量的哈希做优化。</p>
+<h4 id="读取方式"><a href="#读取方式" class="headerlink" title="读取方式"></a>读取方式</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_ = hash[key]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k,v := <span class="keyword">range</span> hash&#123;</span><br><span class="line">  <span class="comment">// k,v</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述两种方式读取哈希表的数据使用的函数和底层原理完全不同，前者需要知道哈希的键，后者遍历哈希表中的全部键值对，访问数据时候不需要知道哈希的键。</p>
+<h4 id="实现哈希"><a href="#实现哈希" class="headerlink" title="实现哈希"></a>实现哈希</h4><p><strong>开放寻址法</strong>是一种在哈希表中解决哈希碰撞的方法，这种方法的核心思想是：依次探测和比较数组中的元素以判断目标键值对是否存在于哈希表中。它底层实现哈希表的数据结构就是数组。</p>
+<p>它的实现方式非常简单，假设我们有一个长度为5的数组，当我们在哈希表中新增一个键：key3，它会依次遍历整个数组，从[0]到[4]探测，直到找到目标键值或空闲内存。</p>
+<blockquote>
+<p>开放寻址法中对性能影响最大的是<strong>装载因子</strong>，它是数组中元素的数量与数组大小的比值。随着装载因子的增加，线性探测的平均用时就会逐渐增加，这会影响哈希表的读写性能。当装载率超过 70% 之后，哈希表的性能就会急剧下降，而一旦装载率达到 100%，整个哈希表就会完全失效，这时查找和插入任意元素的时间复杂度都是 𝑂(𝑛) 的，这时需要遍历数组中的全部元素，所以在实现哈希表时一定要关注装载因子的变化。</p>
+</blockquote>
+<p><strong>拉链法</strong>是哈希表最常见的实现方式，大多数的编程语言都用拉链法实现哈希表。它的好处就是查找的长度比较短，各个用于存储节点的内存都是动态申请的，可以节约比较多的存储空间。</p>
+<p>它的底层实现方式使用数组加链表，有一些编程语言会在拉链法的哈希中引入红黑树以优化性能，拉链法会使用链表数组作为哈希底层的数据结构，我们可以将它看成可以扩展的二维数组。</p>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>字符串其实是一片连续的内存空间，可以将它理解成一个由字符串组成的数组。</p>
+<p>C 语言中的字符串使用字符数组 <code>char[]</code> 表示。数组会占用一片连续的内存空间，而内存空间存储的字节共同组成了字符串，Go 语言中的字符串只是一个只读的字节数组。</p>
+<p>只读代表字符串只会分配到只读到内存空间，Go语言不支持直接修改 string 类型变量的内存空间，但是仍然可以通过 string 和 []byte 类型之间反复转换实现修改这一目的:</p>
+<ol>
+<li>先将这段内存拷贝到堆或者栈上；</li>
+<li>将变量的类型转换成 <code>[]byte</code> 后并修改字节数据；</li>
+<li>将修改后的字节数组转换回 <code>string</code>；</li>
+</ol>
+<p>Go 语言的字符串可以作为哈希的键，所以如果哈希的键是可变的，不仅会增加哈希实现的复杂度，还可能会影响哈希的比较。</p>
+<p>Go 语言中字符串和切片的结构体比较：字符串只少了一个表示容量的 Cap 字段。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> StringHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data <span class="type">uintptr</span></span><br><span class="line">	Len  <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SliceHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data <span class="type">uintptr</span></span><br><span class="line">	Len  <span class="type">int</span></span><br><span class="line">	Cap  <span class="type">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在谈论切片的时候我们提到过一个代码例子，稍微更改代码示例后</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> data = <span class="string">&quot;123&quot;</span></span><br><span class="line">	doWork(data)</span><br><span class="line">	fmt.Println(data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doWork</span><span class="params">(data <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	data = <span class="string">&quot;99&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码并不会按照切片代码逻辑执行，不会输出 “99”，而是依然输出 “123”。这是因为 <strong>字符串虽然和切片的结构体高度相似，但是字符串是一个只读的切片类型。所有在字符串上的写入操作都是通过拷贝实现的。</strong></p>
+<p>正常情况下，运行时会调用 <code>copy</code>将多个字符串拷贝到目标字符串所在的内存空间。新的字符串是一片新的内存空间，与原来的字符串没有任何关联，所以要注意，如果拼接的字符串非常大，拷贝带来的性能损失是无法忽略的。遇到需要极致性能的场景一定要尽量减少类型转换的次数。</p>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>函数在Go语言中算是一等公民。在Go语言函数中使用栈传递参数和返回值，这种方式能够降低实现的复杂度并支持多返回值，但是牺牲了函数调用的性能：</p>
+<p>1.不需要考虑超过寄存器数量的参数应该如何传递</p>
+<p>2.不需要考虑不同架构上的寄存器差异</p>
+<p>3.函数入参和出参的内存空间需要在栈上进行分配</p>
+<p>Go 语言使用栈作为参数和返回值传递的方法是综合考虑后的设计，选择这种设计意味着编译器会更加简单、更容易维护。</p>
+<p>Go 语言在传递参数时使用传值还是传引用类型也是需要注意的点，不同的方式会影响在函数修改入参时是否会影响调用方看到的数据：</p>
+<p>传值：函数调用时会对参数进行拷贝，被调用放和调用方两者持有不相关的两份数据；</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	x := <span class="number">1</span></span><br><span class="line">	my_func(x)</span><br><span class="line">	fmt.Println(<span class="string">&quot;x 值为:&quot;</span>,x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">my_func</span><span class="params">(i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;函数内调用：&quot;</span>, i)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line">函数内调用： <span class="number">2</span></span><br><span class="line">x 值为: <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Go 语言的整型和数组类型都是值传递的</strong>，也就是在调用函数时会对内容进行拷贝。</p>
+<p>传引用：函数调用时会传递参数的指针，被调用方和调用方两者持有相同的数据，任意一方做出的修改都会影响另一方</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	x := <span class="number">1</span></span><br><span class="line">	my_func(&amp;x)</span><br><span class="line">	fmt.Println(<span class="string">&quot;x 值为:&quot;</span>, x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">my_func</span><span class="params">(i *<span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	*i = <span class="number">2</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;函数内调用：&quot;</span>, *i)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">函数内调用： <span class="number">2</span></span><br><span class="line">x 值为: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>上述传引用的函数也侧面表明了：无论传递基础类型，结构体还是指针，都会对传递的参数进行拷贝。将指针作为参数传入某个函数时，函数内部会复制指针，也就是会同时出现两个指针指向原有的内存空间，所以 Go 语言中传指针也是传值。</p>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>接口的本质是引入一个新的中间层，调用方可以通过接口与具体实现分离，解除上下游的耦合，上层模块不需要依赖下层的具体模块，只需要依赖一个约定好的接口。</p>
+<p>接口还可以帮助我们隐藏底层实现，减少关注点。在计算机科学中，接口是比较抽象的概念，但是编程语言中接口的概念更具体。</p>
+<p>Go 语言中的接口是隐式实现，只要实现了接口里面的方法就相当于实现了接口。Go语言只会在传递参数，返回参数以及变量赋值才会对某个类型是否实现接口进行检查</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个接口</span></span><br><span class="line"><span class="keyword">type</span> <span class="type">error</span> <span class="keyword">interface</span> &#123;</span><br><span class="line">	Error() <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明一个结构体</span></span><br><span class="line"><span class="keyword">type</span> RPCError <span class="keyword">struct</span> &#123;</span><br><span class="line">	Code    <span class="type">int</span></span><br><span class="line">	Message <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现接口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *RPCError)</span></span> Error() <span class="type">string</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">&quot;%s, code=%d&quot;</span>, e.Message, e.Code)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用接口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> rpcErr <span class="type">error</span> = &amp;RPCError&#123;</span><br><span class="line">		Code:    <span class="number">404</span>,</span><br><span class="line">		Message: <span class="string">&quot;Not Find&quot;</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(rpcErr.Error())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Go语言中，接口一种是带有一组方法的接口，另一种是不带任何方法的<code>interface&#123;&#125;</code>。后者在Go语言中很常见，所以在实现时使用了特殊类型。要注意 <code>interface&#123;&#125;</code>类型<strong>不是任意类型</strong>。如果我们将类型转换成了 <code>interface&#123;&#125;</code> 类型，变量在运行期间的类型也会发生变化，获取变量类型时会得到 <code>interface&#123;&#125;</code>。</p>
+<p>在《Go语言设计与实现》中有一个例子</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> TestStruct <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NilOrNot</span><span class="params">(v <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> v == <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> s *TestStruct</span><br><span class="line">	fmt.Println(s == <span class="literal">nil</span>)      <span class="comment">// #=&gt; true</span></span><br><span class="line">	fmt.Println(NilOrNot(s))   <span class="comment">// #=&gt; false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ <span class="keyword">go</span> run main.<span class="keyword">go</span></span><br><span class="line"><span class="literal">true</span></span><br><span class="line"><span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到上述输出两个不同的结果，这是因为调用 NilOrNot 函数时发生了<strong>隐式的类型转换</strong>，除了向方法传入参数之外，变量的赋值也会触发隐式类型转换。在类型转换时，<code>*TestStruct</code> 类型会转换成 <code>interface&#123;&#125;</code> 类型，转换后的变量不仅包含转换前的变量，还包含变量的类型信息 <code>TestStruct</code>，所以转换后的变量与 <code>nil</code> 不相等。</p>
+<p>使用结构体实现接口带来的开销会大于使用指针实现，而动态派发在结构体上的表现非常差，这也提醒我们应当尽量避免使用结构体类型实现接口。</p>
+<p>使用结构体带来的巨大性能差异不只是接口带来的问题，带来性能问题主要因为 Go 语言在函数调用时是传值的，动态派发的过程只是放大了参数拷贝带来的影响。</p>
+<h2 id="For-和-range"><a href="#For-和-range" class="headerlink" title="For 和 range"></a>For 和 range</h2><p>对于数组和切片来说，Go 语言有三种不同的遍历方式，这三种不同的遍历方式分别对应着代码中的不同条件</p>
+<ol>
+<li><p>分析遍历数组和切片清空元素的情况；</p>
+<p>Go 语言会直接使用内置函数(runtime函数)清空目标数组内存空间中的全部数据，并在执行完成后更新遍历数组的索引。</p>
+</li>
+<li><p>分析使用 <code>for range a &#123;&#125;</code> 遍历数组和切片，不关心索引和数据的情况；</p>
+</li>
+<li><p>分析使用 <code>for i := range a &#123;&#125;</code> 遍历数组和切片，只关心索引的情况；</p>
+</li>
+<li><p>分析使用 <code>for i, elem := range a &#123;&#125;</code> 遍历数组和切片，关心索引和数据的情况；</p>
+</li>
+</ol>
+<p>如果同时遍历索引和元素的range循环时，Go会额外创建一个新的变量存储切片中的元素，循环中使用的这个变量会在每一次迭代被重新赋值而覆盖，赋值时也会触发拷贝。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误写法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	arr := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">	newArr := []*<span class="type">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		newArr = <span class="built_in">append</span>(newArr, &amp;v)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> newArr &#123;</span><br><span class="line">		fmt.Println(*v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确写法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	arr := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">	newArr := []*<span class="type">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> i, _ := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		newArr = <span class="built_in">append</span>(newArr, &amp;arr[i])</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> newArr &#123;</span><br><span class="line">		fmt.Println(*v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>Go 语言中的 <code>select</code> 也能够让 Goroutine 同时等待多个 Channel 可读或者可写，在多个文件或者 Channel状态改变之前，<code>select</code> 会一直阻塞当前线程或者 Goroutine。</p>
+<p><code>select</code> 是与 <code>switch</code> 相似的控制结构，与 <code>switch</code> 不同的是，<code>select</code> 中虽然也有多个 <code>case</code>，但是这些 <code>case</code> 中的表达式必须都是 Channel 的收发操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fibonacci</span><span class="params">(c, quit <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	x, y := <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> c &lt;- x:</span><br><span class="line">			x, y = y, x+y</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> &lt;-quit:</span><br><span class="line">			fmt.Println(<span class="string">&quot;quit&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>select</code> 能在 Channel 上进行非阻塞的收发操作；</li>
+<li><code>select</code> 在遇到多个 Channel 同时响应时，会随机执行一种情况；</li>
+</ol>
+<h3 id="非阻塞的收发"><a href="#非阻塞的收发" class="headerlink" title="非阻塞的收发"></a>非阻塞的收发</h3><p>在通常情况下，<code>select</code> 语句会阻塞当前 Goroutine 并等待多个 Channel 中的一个达到可以收发的状态。但是如果 <code>select</code> 控制结构中包含 <code>default</code> 语句，那么这个 <code>select</code> 语句在执行时会遇到以下两种情况：</p>
+<ol>
+<li>当存在可以收发的 Channel 时，直接处理该 Channel 对应的 <code>case</code>；</li>
+<li>当不存在可以收发的 Channel 时，执行 <code>default</code> 中的语句；</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	ch := make(chan int)</span><br><span class="line">	select &#123;</span><br><span class="line">	case i := &lt;-ch:</span><br><span class="line">		fmt.Println(&quot;i:&quot;, i)</span><br><span class="line">	default:</span><br><span class="line">		fmt.Println(&quot;default&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>随机执行</p>
+<p><code>select</code> 在遇到多个 <code>&lt;-ch</code> 同时满足可读或者可写条件时会随机选择一个 <code>case</code> 执行其中的代码。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> <span class="keyword">range</span> time.Tick(<span class="number">1</span> * time.Second) &#123;</span><br><span class="line">			ch &lt;- <span class="number">0</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> &lt;-ch:</span><br><span class="line">			<span class="built_in">println</span>(<span class="string">&quot;case1&quot;</span>)</span><br><span class="line">		<span class="keyword">case</span> &lt;-ch:</span><br><span class="line">			<span class="built_in">println</span>(<span class="string">&quot;case2&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出:</span></span><br><span class="line">case2</span><br><span class="line">case1</span><br><span class="line">case2</span><br><span class="line">case2</span><br><span class="line">case1</span><br><span class="line">case2</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>两个 <code>case</code> 都是同时满足执行条件的，如果我们按照顺序依次判断，那么后面的条件永远都会得不到执行，而随机的引入就是为了避免饥饿问题的发生。</p>
+<p>第一种情况：<code>select</code> 不存在任何的 <code>case</code>，空的 <code>select</code> 语句会直接阻塞当前 Goroutine，导致 Goroutine 进入无法被唤醒的永久休眠状态。</p>
+<p>第二种情况：<code>select</code> 只存在一个 <code>case</code>，编译器会将<code>select</code> 语句改写为 if 条件语句。当 <code>case</code> 中的 Channel 是空指针时，会直接挂起当前 Goroutine 并陷入永久休眠。</p>
+<p>第三种情况：<code>select</code> 存在两个 <code>case</code>，其中一个 <code>case</code> 是 <code>default</code>。编译器认为这是一次非阻塞的收发操作，该函数会将 <code>case</code> 中的所有 Channel 都转换成指向 Channel 的地址。</p>
+<p>第四种情况：<code>select</code> 存在多个 <code>case</code>。编译器会编译成多个 if 语句执行对应 case 的代码。</p>
+<h2 id="Defer"><a href="#Defer" class="headerlink" title="Defer"></a>Defer</h2><p>Go 语言的 <code>defer</code> 会在当前函数返回前执行传入的函数，它会经常被用于关闭文件描述符、关闭数据库连接以及解锁资源。</p>
+<p>使用<code>defer</code>一般是在函数调用结束后完成一些收尾工作。</p>
+<h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>向 <code>defer</code> 关键字传入的函数会在函数返回之前运行。假设我们在 <code>for</code> 循环中多次调用 <code>defer</code> 关键字：</p>
+<p>可以看到下例代码输出是倒序，可以把<code>defer</code>的执行顺序看成一个出栈的顺序，即最后加入栈的最先出。是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 <strong>panic</strong> 函数，那么会先执行 defer 函数，最后再执行 panic 函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">if</span> i == <span class="number">4</span> &#123;</span><br><span class="line">			fmt.Println(<span class="string">&quot;结束&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">结束</span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>同时<code>defer</code> 传入的函数不是在退出代码块的作用域时执行的，它只会在当前函数和方法返回之前被调用。</p>
+<p><code>defer</code>关键字会拷贝函数中引用外部参数，在调用<code>defer</code>关键字的时候就会进行计算(defer也继承了函数调用传值的特性)。</p>
+<p>默认情况下Go语言中defer结构体都会在堆上分配，分配在堆上的方案是一个保底方案。但是除了分配的位置不同，本质上没有什么不同，除了分配在栈上可以节约额外开销。</p>
+<p><strong>执行顺序</strong></p>
+<p>一个函数中，多个 defer 的执行顺序为 “后进先出”，但是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 <strong>panic</strong> 函数，那么会先执行 defer 函数，最后再执行 panic 函数。</p>
+<p><strong>defer声明时会先计算确定参数的值，defer推迟执行的仅是其函数体。</strong></p>
+<h2 id="panic-和-recover"><a href="#panic-和-recover" class="headerlink" title="panic 和 recover"></a>panic 和 recover</h2><p><code>panic</code> 能够改变程序的控制流，调用 <code>panic</code> 后会立刻停止执行当前函数的剩余代码，并在当前 Goroutine 中递归执行调用方的 <code>defer</code>；</p>
+<p><code>recover</code> 可以中止 <code>panic</code> 造成的程序崩溃。它是一个只能在 <code>defer</code> 中发挥作用的函数，在其他作用域中调用不会发挥作用；</p>
+<p>也就是说: panic 只会触发当前 Goroutine 的 defer ，而 recover 只有在defer 中调用才会生效</p>
+<p>panic 允许在 defer 中嵌套多次调用。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> <span class="built_in">println</span>(<span class="string">&quot;in main&quot;</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="built_in">println</span>(<span class="string">&quot;in goroutine&quot;</span>)</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">&quot;error !&quot;</span>)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Second)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">in goroutine</span><br><span class="line"><span class="built_in">panic</span>: <span class="type">error</span> !</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>要注意：main函数中的defer 语句没有执行，执行的只有当前Goroutine 中的 <code>defer</code>。多个 Goroutine 之间没有太多的关联，一个 Goroutine 在 <code>panic</code> 时也不应该执行其他 Goroutine 的延迟函数。</p>
+<p><code>recover</code> 只有在发生 <code>panic</code> 之后调用才会生效：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 必须要先声明defer，否则不能捕获到panic异常</span></span><br><span class="line"><span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; </span><br><span class="line">		<span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(<span class="string">&quot;err info:&quot;</span>, err) <span class="comment">// 这里的err其实就是panic传入的内容</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"><span class="built_in">panic</span>(<span class="string">&quot;异常信息&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在 Goroutine 中使用 recover 和 panic</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> test()</span><br><span class="line">	fmt.Println(<span class="string">&quot;in main&quot;</span>)</span><br><span class="line">	time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; </span><br><span class="line">		<span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(<span class="string">&quot;err info:&quot;</span>, err) </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="built_in">panic</span>(<span class="string">&quot;test 异常信息&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h1><h2 id="上下文Conetext"><a href="#上下文Conetext" class="headerlink" title="上下文Conetext"></a>上下文Conetext</h2><p>Context 是Go 语言中独特的设计。它用来设置截止日期，同步信号，传递请求相关值的结构体。</p>
+<p>在 Goroutine 构成的树形结构中对信号进行同步以减少计算资源的浪费是 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 的最大作用。Go 服务的每一个请求都是通过单独的 Goroutine 处理的<a target="_blank" rel="noopener" href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-context/#fn:2">2</a>，HTTP&#x2F;RPC 请求的处理器会启动新的 Goroutine 访问数据库和其他服务。</p>
+<p>我们可能会创建多个 Goroutine 来处理一次请求，而 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 的作用是在不同 Goroutine 之间同步请求特定数据、取消信号以及处理请求的截止日期。</p>
+<p>每一个 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 都会从最顶层的 Goroutine 一层一层传递到最下层。<a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 可以在上层 Goroutine 执行出现错误时，将信号及时同步给下层。</p>
+<p>这样设计的好处就是：如果最上层的Goroutine出现某些原因执行失败了，可以通过 <code>context.Context</code>在下层及时停掉无用的工作以减少额外资源的消耗。</p>
+<p>多个Goroutine同时订阅 ctx.Done()管道中的消息，一旦接受道取消信号就立即停止当前正在执行的工作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx, canel := context.WithTimeout(context.Background(), <span class="number">1</span>*time.Second) <span class="comment">// 设置一个超时的上下文</span></span><br><span class="line">	<span class="keyword">defer</span> canel()</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 设置子任务超时时间</span></span><br><span class="line">	<span class="keyword">go</span> handle(ctx, <span class="number">500</span>*time.Millisecond)</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">		fmt.Println(<span class="string">&quot;main&quot;</span>, ctx.Err())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handle</span><span class="params">(ctx context.Context, duration time.Duration)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">		fmt.Println(<span class="string">&quot;handle&quot;</span>, ctx.Err())</span><br><span class="line"></span><br><span class="line">	<span class="keyword">case</span> &lt;-time.After(duration):</span><br><span class="line">		fmt.Println(<span class="string">&quot;process request with&quot;</span>, duration)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从源代码来看，<a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Background"><code>context.Background</code></a> 和 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.TODO"><code>context.TODO</code></a> 也只是互为别名，没有太大的差别，只是在使用和语义上稍有不同：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Background"><code>context.Background</code></a> 是上下文的默认值，所有其他的上下文都应该从它衍生出来；</li>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.TODO"><code>context.TODO</code></a> 应该仅在不确定应该使用哪种上下文时使用；</li>
+</ul>
+<p>在多数情况下，如果当前函数没有上下文作为入参，我们都会使用 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Background"><code>context.Background</code></a> 作为起始的上下文向下传递。</p>
+<p>Go 语言中的 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 的主要作用还是在多个 Goroutine 组成的树中同步取消信号以减少对资源的消耗和占用，虽然它也有传值的功能，但是这个功能我们还是很少用到。</p>
+<p>在真正使用传值的功能时我们也应该非常谨慎，使用 <a target="_blank" rel="noopener" href="https://draveness.me/golang/tree/context.Context"><code>context.Context</code></a> 传递请求的所有参数一种非常差的设计，比较常见的使用场景是传递请求对应用户的认证令牌以及用于进行分布式追踪的请求 ID。</p>
+<h2 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h2><p>Go语言中Channel是比较核心的数据结构，它是官方推荐 Goroutine 之间的通信方式，也是支撑Go语言高性能并发编程模型的重要结构体。</p>
+<blockquote>
+<p>不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。</p>
+</blockquote>
+<p>在很多主流的编程语言中，多个线程传递数据的方式一般都是共享内存，为了解决线程竞争，我们需要限制同一时间能够读写这些变量的线程数量，然而这与 Go 语言鼓励的设计并不相同。</p>
+<p>Go 语言提供通信顺序进程。Goroutine 和 Channel 分别对应 CSP 中的实体和传递信息的媒介，Goroutine 之间会通过 Channel 传递数据。</p>
+<p>目前的 Channel 收发操作遵循来先进先出的设计：</p>
+<p>先从 Channel 读取数据的 Goroutine 会先接收到数据。</p>
+<p>先向 Channel 发送数据的 Goroutine 会先得到先发送数据的权利。</p>
+<blockquote>
+<p>锁是一种常见的并发控制技术，我们一般会将锁分成乐观锁和悲观锁，即乐观并发控制和悲观并发控制，无锁（lock-free）队列更准确的描述是使用乐观并发控制的队列。乐观并发控制也叫乐观锁，很多人都会误以为乐观锁是与悲观锁差不多，然而它并不是真正的锁，只是一种并发控制的思想<a target="_blank" rel="noopener" href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/#fn:5">5</a>。</p>
+</blockquote>
+<p>从某种程度上说，Channel 是一个用于同步和通信的有锁队列，使用互斥锁解决程序中可能存在的线程竞争问题是很常见的，我们能很容易地实现有锁队列。</p>
+<p>然而锁导致的休眠和唤醒会带来额外的上下文切换，如果临界区<a target="_blank" rel="noopener" href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/#fn:6">6</a>过大，加锁解锁导致的额外开销就会成为性能瓶颈。</p>
+<p>Go 语言中所有 Channel 的创建都会使用 make 关键字：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个无缓冲的管道</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建一个有缓冲的管道</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>,<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Sync-Mutex"><a href="#Sync-Mutex" class="headerlink" title="Sync.Mutex"></a>Sync.Mutex</h2><p>互斥锁是并发控制的一个基本手段，是为了避免竞争而建立的一种并发控制机制。当一个公共变量被多个Goroutine所访问，为了避免并发访问导致意想不到的结果，使用互斥锁让公共变量只能同时由一个线程持有。</p>
+<p>当一个变量被某个线程持有时，其他线程如果想访问这个变量，会访问失败或等待。直到持有这个变量的线程释放<strong>锁</strong>，其他线程才有机会获取这个变量。</p>
+<p>Mutex 是使用最广泛的同步原语，所以我们从互斥锁开始，再到读写锁，并发编排等。在Go标准库中 sync 提供锁等一系列同步原语。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	wg.Add(<span class="number">10000</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			count++</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line"><span class="number">9347</span></span><br></pre></td></tr></table></figure>
+
+<p>上述代码中使用了多个协程访问同一个变量，可以看到输出结果是9347，这并不是我们想要的。如果使用<code>mu.Lock()</code>和 <code>mu.unLock()</code> 来安全访问公共变量：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> mu sync.Mutex</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	count := <span class="number">0</span></span><br><span class="line">	wg.Add(<span class="number">10000</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			mu.Lock()</span><br><span class="line">			count++</span><br><span class="line">			mu.Unlock()</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line"><span class="number">10000</span></span><br></pre></td></tr></table></figure>
+
+<p>在Go语言中Mutex有两种模式，正常模式下锁的等待者会按照先进先出的顺序获取锁。但是一旦Goroutine 超过 1ms 没有获取到锁，它就会将当前互斥锁切换饥饿模式，防止部分 Goroutine 【饿死】，因为刚唤起的Goroutine与新创建的Goroutine 竞争时大概率获取不到锁。</p>
+<p>饥饿模式是为了保证互斥锁的公平性，在饥饿模式中，互斥锁会直接交给等待队列最前面的 Goroutine。新的 Goroutine 在该状态下不能获取锁、也不会进入自旋状态，它们只会在队列的末尾等待。如果一个 Goroutine 获得了互斥锁并且它在队列的末尾或者它等待的时间少于 1ms，那么当前的互斥锁就会切换回正常模式。</p>
+<p>与饥饿模式相比，正常模式下的互斥锁能够提供更好地性能，饥饿模式的能避免 Goroutine 由于陷入等待无法获取锁而造成的高尾延时。</p>
+<h1 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h1><h2 id="Go-语言中-new-和-make-的区别"><a href="#Go-语言中-new-和-make-的区别" class="headerlink" title="Go 语言中 new 和 make 的区别"></a><strong>Go 语言中 new 和 make 的区别</strong></h2><p>new 和 make 都是 分配内存的原语。new 只分配内存但并不初始化内存，而 make 用于 slice , map 和 channel 的初始化。</p>
+<p>slice , map , channel 类型属于引用类型，go 会给引用类型初始化为 nil , 所以 make 不仅可以开辟一个内存，还能给找个内存的类型初始化其零值。</p>
+<p>make 只能用来分配及初始化类型为 slice, map , channel 的数据。new 可以分配任意类型的数据。</p>
+<p>make 返回的还是引用类型本身；而 new 返回的是指向类型的指针。</p>
+<h2 id="数组和切片的区别"><a href="#数组和切片的区别" class="headerlink" title="数组和切片的区别"></a><strong>数组和切片的区别</strong></h2><p>数组类型的值的长度必须在声明的时候给定，并且之后不会再改变。</p>
+<p>切片可以自动扩容，我们可以将切片理解成一片连续的内存空间加上长度与容量的标识。</p>
+<p><strong>切片引入了一个抽象层，提供了对数组中部分连续的片段引用，</strong></p>
+<h2 id="数组相比切片有什么优势"><a href="#数组相比切片有什么优势" class="headerlink" title="数组相比切片有什么优势"></a><strong>数组相比切片有什么优势</strong></h2><p><strong>可比较</strong>：数组是固定长度，它们之间是可以比较的，数组是<strong>值对象</strong>。切片不可以直接比较，也不能用于判断。数组可以作为 map 的 <strong>键</strong>（key）, 而切片不行。</p>
+<p><strong>编译安全</strong>：数组可以提供更高的编译时安全，可以在编译时检查索引范围。</p>
+<p><strong>规划内存布局</strong>：更好控制内存布局，因为不能直接在带有切片的结构中分配空间，所以可以使用数组来解决。</p>
+<p><strong>访问速度</strong>：其访问（单个）数组元素比访问切片元素更高效，时间复杂度是 O (1)</p>
+<p>更多细节：<a target="_blank" rel="noopener" href="https://eddycjy.com/posts/go/go-array-slice/">https://eddycjy.com/posts/go/go-array-slice/</a></p>
+<h2 id="切片会输出什么结果？"><a href="#切片会输出什么结果？" class="headerlink" title="切片会输出什么结果？"></a>切片会输出什么结果？</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> data = <span class="built_in">make</span>([]<span class="type">int</span>, <span class="number">3</span>, <span class="number">3</span>)</span><br><span class="line">	doWork(data)</span><br><span class="line">	fmt.Println(data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doWork</span><span class="params">(data []<span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	data = <span class="built_in">append</span>(data, <span class="number">1</span>)</span><br><span class="line">	data[<span class="number">0</span>] = <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里要注意两个点：</p>
+<p>1.Go 语言函数传值，<strong>无论是传递基本类型，结构体还是指针，都会对传递的参数进行拷贝。</strong></p>
+<p>2.切片的扩容机制</p>
+<p>这里可以先看一下切片的数据结构:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SliceHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data <span class="type">uintptr</span></span><br><span class="line">	Len  <span class="type">int</span></span><br><span class="line">	Cap  <span class="type">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从切片的数据结构可以看出，Data 是一个内置的指针类型，可直接更改引用地址的参数。所以虽然函数使用值传递，但是在函数内部执行 date[0] &#x3D; 1 ，外部的切片数据也会发生变化。</p>
+<p>但是 Len 和 Cap 是 int 类型，这代表，函数内部更改不会影响到函数外的数据源。</p>
+<p>回到题目本身，data 初始化后是 [0,0,0] 值传递到 doWork 函数后进行扩容，数据发生变化 data 为 [0,0,0,0] 后修改切片的第一个元素 [1,0,0,0]，但是这是在 doWork 函数中内的数据变化，并不会影响到 main 函数中 data 的值。</p>
+<p>切片的扩容是为切片分配新的内存空间并复制原切片中元素的过程。如果切片中的元素不是指针类型，那么会将原数组内存中的内容复制到新申请的内容中，这将最终会返回一个新切片，并覆盖原切片。</p>
+<blockquote>
+<p>所以在使用 append 函数对切片进行扩容后，需要一个变量去接受它的新切片。</p>
+</blockquote>
+<blockquote>
+<p><strong>遇到大切片扩容或复制的时候，可能会引发大规模的内存复制，一定要减少类似的操作以避免影响程序的性能。</strong></p>
+</blockquote>
+<h2 id="Map的线程安全"><a href="#Map的线程安全" class="headerlink" title="Map的线程安全"></a><strong>Map的线程安全</strong></h2><p>Go 内建的 map 对象不是线程安全的，并发读写的时候运行时会有检查，遇到并发问题就会导致 panic 。</p>
+<p>解决 Map 的线程安全有多个方案：1.互斥锁 2.读写锁 <a target="_blank" rel="noopener" href="http://3.sync.map/">3.Sync.Map</a> 4.分片加锁</p>
+<p>前两个方案不用过多赘述，可以重点谈论一下后两个方案。</p>
+<p>Go 内建的 map 类型不是线程安全的，而 <a target="_blank" rel="noopener" href="http://sync.map/">Sync.Map</a> 并不是来替换内建的 map 类型的，它只能被应用在一些特殊场景内</p>
+<p>1.只会增长的缓存系统中，一个 key 只写入一次而被读很多次。</p>
+<p>2.多个 goroutine 为不相交的键读，写 和 重写键值对。</p>
+<p>优点：</p>
+<p>1.空间换时间。通过冗余的两个数据结构（只读的 read 字段，可写的 dirty ）,来减少加锁对性能的影响。对只读字段（read）的操作不需要加锁。</p>
+<p>2.优先从 read 字段读取，更新，删除，因为对read字段的读取不需要锁。</p>
+<p>3.动态调整。miss 次数过多，将 dirty 数据提升为read，避免总是从 dirty 中加锁读取。</p>
+<p>4.double-checking。加锁之后还要再检查 read 字段，确定真的不存在才操作 dirty 字段。</p>
+<p>5.延迟删除。删除一个键值只是打标记，只有在提升dirty 字段为 read 字段的时候才清理删除的数据。</p>
+<p><strong>分片加锁 可看</strong>：<a target="_blank" rel="noopener" href="https://github.com/orcaman/concurrent-map">https://github.com/orcaman/concurrent-map</a></p>
+<h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a><strong>反射</strong></h2><p>Go 语言中反射的第一法则：<strong>我们能将 Go 语言的 interface{} 变量转换成反射对象。因为函数的调用都是值传递，所以变量类型在底层函数调用时进行类型转换。所以会从基本类型转换到 interface{}</strong></p>
+<p>第二法则：我们可以从反射对象获取 interface{} 变量。</p>
+<p>第三法则：我们得到的反射对象跟原对象没有任何关系，那么直接修改反射对象无法改变原变量，程序为了防止错误就会崩溃。</p>
+<h2 id="Channel-1"><a href="#Channel-1" class="headerlink" title="Channel"></a><strong>Channel</strong></h2><p>先从 Channel 读取数据的 Goroutine 会先接收到数据</p>
+<p>先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利</p>
+<p>Channel 在运行时使用 runtime.hchan 结构体：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> hchan <span class="keyword">struct</span> &#123;</span><br><span class="line">	qcount   <span class="type">uint</span>   <span class="comment">// Channel 中的元素个数</span></span><br><span class="line">	dataqsiz <span class="type">uint</span>   <span class="comment">// Channel 中的循环队列的长度</span></span><br><span class="line">	buf      unsafe.Pointer  <span class="comment">// Channel 的缓冲区数据指针</span></span><br><span class="line">	elemsize <span class="type">uint16</span> <span class="comment">// Channel 能够手法的元素大小  </span></span><br><span class="line">	closed   <span class="type">uint32</span></span><br><span class="line">	elemtype *_type <span class="comment">// Channel 能够手法的元素类型</span></span><br><span class="line">	sendx    <span class="type">uint</span>   <span class="comment">// Channel 的发送操作处理到的位置       </span></span><br><span class="line">	recvx    <span class="type">uint</span>   <span class="comment">// Channel 的接收操作处理到的位置</span></span><br><span class="line">	recvq    waitq  <span class="comment">// 存储当前 Channel 由于缓冲区空间不足而阻塞的 Goroutine 列表</span></span><br><span class="line">	sendq    waitq</span><br><span class="line"></span><br><span class="line">	lock mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> waitq <span class="keyword">struct</span> &#123;</span><br><span class="line">	first *sudog</span><br><span class="line">	last  *sudog</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Channel 是一个用于同步和通信的有锁队列。</p>
+<blockquote>
+<p>向一个已经关闭的 Channel 发送数据时，会报告错误并中止程序。 向一个已经关闭的 Channel （无缓存）读数据时，会读取到零值。 向一个已经关闭的 Channel （有缓存） 读取数据时，会读取通道里面的剩余值。剩余值读取完后会读到零值。</p>
+</blockquote>
+<p><strong>Goroutine 的泄露</strong></p>
+<p>如果启动了一个 goroutine ，但是没有符合预期地退出，直到程序结束，此 goroutine 才退出，这种情况叫做 goroutine 泄露。</p>
+<p>一般泄露是因为 Channel 操作阻塞导致整个 goroutine 一直阻塞等待或 goroutine 里有死循环。</p>
+<blockquote>
+<p>共享资源的并发访问使用传统并发原语 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel，除非只想 signal 一个 goroutine，才使用 Cond 简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context</p>
+</blockquote>
+<h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><p>《Go 并发编程实战》</p>
+<p>《Go语言高性能编程》</p>
+<p>《Go 语言设计与实现》</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://ananonymousfriend.github.io/2021/07/20/Go%E8%AF%AD%E8%A8%80%E8%AE%AD%E7%BB%83/">https://ananonymousfriend.github.io/2021/07/20/Go%E8%AF%AD%E8%A8%80%E8%AE%AD%E7%BB%83/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Go/"># Go</a>
+                    
+                        <a href="/tags/%E9%9D%A2%E8%AF%95/"># 面试</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">计算机基础知识笔记</a>
+            
+            
+            <a class="next" rel="next" href="/2021/07/03/Kubernetes%20%E9%83%A8%E7%BD%B2/">Kubernetes 安装</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
