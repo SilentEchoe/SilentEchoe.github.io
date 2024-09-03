@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>分布式存储Ceph | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">分布式存储Ceph</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 2, 2024&nbsp;&nbsp;10:23:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>存储一直是系统中最重要的部分，在云计算推动的当下，一方面平台需要用户创造的数字资产作为信息壁垒，另一方面平台也有责任和义务保全用户托管的信息。随着平台的用户数激增，对存储系统的要求也越来越高。</p>
+<p>一个高扩展，高性能，高可用的分布式存储系统是系统稳定的重要基石，存储系统中大致可分为三部分：块存储，对象存储，文件存储。在主流的分布式存储中 HDFS 可以作为文件存储的代表；Swift 作为对象存储的代表；Ceph 同时提供了块，文件，对象三种存储方式，于是被称为统一存储。</p>
+<h3 id="Ceph"><a href="#Ceph" class="headerlink" title="Ceph"></a>Ceph</h3><p>分布式文件系统能对多个物理机上的存储空间进行管理，并对外提供并行I&#x2F;O，存储容错，动态的水平扩展以及强一致性。Ceph 是当前最流行的开源分布式存储系统，它的核心是可靠自主的分布式对象存储(Reliable Autonomic Distributed Object Store , RADOS) 通过该模块可以水平扩展大规模 OSDs 提供自愈，自管理并强一致性的副本对象存储服务。</p>
+<p>RADOS 中的对象会被存储在逻辑分区(Pool); 对象会在池中分片，每个分片单位被称为放置组(Placement Groups PGs) 放置组中的数据会根据配置好的副本数同步到多个 OSD上，这样可以在单个 OSD 宕机时保证数据的正确性。</p>
+<p>RADOS 集群中的每个节点都会为每个本地存储设备运行独立的 OSD 守护进程，，这些进程会处理来自 librados 的请求并配合其他的 OSD 节点完成数据的拷贝，迁移以及错误恢复等操作，所有的数据都会通过内部的 ObjectStore 接口持久化到本地。</p>
+<p>下图来源于<a target="_blank" rel="noopener" href="https://draveness.me/papers-ceph/">分布式存储 Ceph 的演进经验 · SOSP ‘19</a></p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240903135616178.png" alt="image-20240903135616178"></p>
+<p>传统的分布式文件系统一般都会直接将本地的文件系统直接作为存储后端，以本地文件系统作为基础构建更加通用的文件系统，但以 Zed 编辑器为例，在无法满足更加复杂的场景下，才会选择从最底层重新构建，以适配更加灵活和复杂的场景需求。如今的Ceph存储后端没有直接使用本地文件系统，而是直接管理本地的裸设备。这么做的原因有三点：</p>
+<p>1.直接在本地文件系统上构建无额外开销的事务机制是非常复杂的</p>
+<p>2.本地文件系统的元数据性能对分布式文件系统的性能有很严重的影响</p>
+<p>3.成熟的文件系统有非常严格的接口，适配新的存储硬件很困难</p>
+<h4 id="事务实现"><a href="#事务实现" class="headerlink" title="事务实现"></a>事务实现</h4><p>事务通过一系列操作封装成一个原子单元来简化开发工程师的工作，但作为一个文件系统支持事务是非常有难度的事情。在 SOSP ‘19 论文中提及三种实现事务的方式：</p>
+<p>1.基于文件系统内部的事务</p>
+<p>部分文件系统为了实现原子性地执行一些复合操作，选择在内部实现事务，要注意的是这些机制仅仅用于内部，开发工程师对原有文件系统如果不太理解，可能无法利用其内部事务，同时因为仅为内部使用，在拓展性上会非常受限。</p>
+<p>2.用户空间实现逻辑预写式日志（Write-Ahead Log、WAL）</p>
+<p>当事务执行时，首选会对所有的事务提交进行一个序列化，然后写入日志，在提交事务，再提交到文件系统。这里的每个事务在执行前都需要读取前一个事务的执行结果，以作为回滚的依据，很明显这种多种严重的方式会导致事务提交非常低效。</p>
+<p>使用这种方式也需要承担一定的风险：错误恢复重放日志时数据会发生错误，严重的情况下会导致数据损坏</p>
+<p>3.使用支持事务的键值数据库</p>
+<p>这种思路类似于引入中间件分布式锁，将元数据存储在RocksDB中，但对象依然使用文件系统存储，在存储中写入对象时要分别写入文件和RocksDB，并且需要调用两次<code>fsync</code>函数，这样会带来额外的开销。</p>
+<h4 id="元数据操作"><a href="#元数据操作" class="headerlink" title="元数据操作"></a>元数据操作</h4><p>元数据是文件系统中重要的组成部分，元数据操作直接影响着文件系统的性能和表现。元数据操作本质上是一种事务操作，文件系统中的元数据操作通常情况下是由一系列的基本操作构成，在事务操作时，工程师们希望它总能保持一致性：要么全都完成，要么全都失败。</p>
+<p>如果一个元数据操作没有全部完成时发生故障，就会产生一部分的数据写入磁盘，另一部分的数据由于还没写入而丢失。当服务重新恢复后会发现数据的不一致性，这点是无法容忍的，比较常见的方法是使用日志技术来作为恢复的依据。</p>
+<p>另一种情况是事务的并非执行，当多个元数据并发操作时，如果不进行加锁，可能导致多个元数据子操作相互覆盖，从而产生意想不到的错误。</p>
+<h4 id="硬件设备扩展"><a href="#硬件设备扩展" class="headerlink" title="硬件设备扩展"></a>硬件设备扩展</h4><p>成熟的本地文件系通常在设计时就限定了接口的扩展性，随着存储硬件的发展也带来更多的工作量，对分布式文件系统也带来了更多的挑战。当我们回顾Ceph的演变历史会发现，最初的存储引擎实现为 EBOFS(Extent and B-Tree-based Object File System)，本质上也是在文件系统上做了扩展。</p>
+<blockquote>
+<p>在2011年正式使用XFS作为Ceph存储后端之前，Ceph团队还尝试过使用其他文件系统如ext4、ZFS等作为存储后端，但最后选择了XFS，因为其具有更好的伸缩性，元数据的操作性能也较好。</p>
+</blockquote>
+<h3 id="从NFS-到-Rook-Ceph"><a href="#从NFS-到-Rook-Ceph" class="headerlink" title="从NFS 到 Rook Ceph"></a>从NFS 到 Rook Ceph</h3><p>Network File System NFS 网络文件系统，它的主要功能是通过网络让不同的机器，不同的操作系统能够彼此分享数据，应用程序也能通过网络访问位于服务器磁盘中的数据。</p>
+<p>它的基本原则是:允许不同的客户端和服务端通过一组RPC分享相同的文件系统。</p>
+<p>在云原生的环境下，NFS也可以被当作整个集群的共享目录：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">集群中的每个节点都需要安装</span></span><br><span class="line">sudo apt install  nfs-kernel-server</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">需要挂载的节点才需要创建目录</span></span><br><span class="line">mkdir /data/nfs-new</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">集群的每个节点都需要配置</span></span><br><span class="line">vim /etc/exports</span><br><span class="line">/data/nfs-new *(rw,sync,nohide)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">启动NFS服务器</span></span><br><span class="line">sudo systemctl enable nfs-server</span><br><span class="line">sudo systemctl start nfs-server</span><br><span class="line">sudo systemctl status nfs-server</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">helm 添加</span></span><br><span class="line">helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">如果无法访问外网可以提前在本地集群拉取</span></span><br><span class="line">helm pull nfs-subdir-external-provisioner</span><br><span class="line"></span><br><span class="line">helm install nfs-subdir-external-provisioner ./nfs-subdir-external-provisioner-4.0.18.tgz --set nfs.server=127.0.0.3  --set nfs.path=/data/nfs-new --set storageClass.defaultClass=true --set image.repository=dyrnq/nfs-subdir-external-provisioner</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Rook 是一个开源<strong>云原生存储编排器</strong>，为 Ceph 存储提供平台、框架和支持，以便与云原生环境原生集成。</p>
+<p>Rook 自动部署和管理 Ceph，以提供自我管理、自我扩展和自我修复的存储服务。它可以通过在 Kubernetes 资源上构建来部署、配置、预置、扩展、升级和监控 Ceph 来实现这一点。</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240903150625169.png" alt="image-20240903150625169"></p>
+<p>Rook 允许通过自定义资源(CRD)创建和自定义存储集群：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://rook.io/docs/rook/latest-release/CRDs/Cluster/host-cluster/">Host Storage Cluster</a>：使用主机路径和原始设备的存储</li>
+<li><a target="_blank" rel="noopener" href="https://rook.io/docs/rook/latest-release/CRDs/Cluster/pvc-cluster/">PVC 存储集群</a>：通过指定 Rook 应该用于消耗存储的存储类（通过 PVC），在 Rook 下动态配置存储</li>
+<li><a target="_blank" rel="noopener" href="https://rook.io/docs/rook/latest-release/CRDs/Cluster/stretch-cluster/">延伸存储集群</a>：将 Ceph mons 分布在三个区域中，而存储 （OSD） 仅在两个区域中配置</li>
+<li><a target="_blank" rel="noopener" href="https://rook.io/docs/rook/latest-release/CRDs/Cluster/external-cluster/external-cluster/">外部 Ceph 集群</a>：将您的 K8s 应用程序连接到外部 Ceph 集群</li>
+</ol>
+<p>NFS的优点在于跨节点文件共享，可以直接利用现有的存储目录文件，对基础设备要求低，降低了成本。但受限于性能，NFS通常情况下要比本地存储慢，当集群规模扩展时，NFS服务器作为单点目录如果发生故障，影响面甚广，也不易于迁移和扩展。</p>
+<p>Ceph 经过十几年的技术发展，是流行的开源分布式存储服务之一，作为分布式文件存储服务它在过去十几年里经受了时间的考验，在如今云原生时间背景下，它提供的高性能，可靠性，一致性也成为云服务的基石。</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>本篇文章简单介绍开源的分布式框架Ceph，同时简要对比了一下云原生存储的方案。从作者本人的角度来看，我们在设计基础设施框架时也能从Ceph的技术选型和演变中借鉴到经验和教训：</p>
+<p>在集群规模不时，可以使用NFS快速搭建，以低成本的方式快速试错，当系统发展到一定规模时就要考虑存储的安全&#x2F;稳定&#x2F;扩展性。</p>
+<h3 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h3><p><a target="_blank" rel="noopener" href="https://draveness.me/papers-ceph/">分布式存储 Ceph 的演进经验 · SOSP ‘19</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tangyuecan.com/2020/02/17/%E5%9F%BA%E4%BA%8Ek8s%E6%90%AD%E5%BB%BAceph%E5%88%86%E9%83%A8%E7%BD%B2%E5%AD%98%E5%82%A8/">基于k8s搭建Ceph分布式存储</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.51cto.com/article/743767.html">分布式存储系统 Ceph 介绍与环境部署</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/101772382">https://zhuanlan.zhihu.com/p/101772382</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2024/09/02/Ceph/">https://silentechoe.github.io/2024/09/02/Ceph/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AD%98%E5%82%A8/"># 存储</a>
+                    
+                        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"># 分布式</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/08/29/VirtualService/">VirtualService</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
