@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>Kubernetes GPU 管理 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Kubernetes GPU 管理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 6, 2024&nbsp;&nbsp;13:49:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Kubernetes/">Kubernetes</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>2022年5月13日，英伟达发布了Linux开源<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/open-gpu-kernel-modules">GPU内核模块</a>，支持数据中心所用的GPU和消费级显卡，这意味着开发者可以通过代码而观察到内核驱动是如何工作的，同时还可以将 <a target="_blank" rel="noopener" href="https://www.nvidia.com/en-us/">NVIDIA</a> 驱动直接安装在企业内部的服务器上。</p>
+<p>处于AI浪潮的大背景下，背后的推手不言而喻，长期以来 NVIDIA 一直以高性能 GPU 和闭源驱动程序而闻名。闭源一直是 Linux 社区和其他开源社区所厌恶的，这场由 Linus 与 NVIDIA 长达十年的冲突在开源内核模块后似乎画上了句号。</p>
+<p>看似开源社区取得了胜利，但 CUDA 作为 GPU 的核心依然是闭源的。这个由 NVIDIA 推出的并行计算架构和编程模型，它允许开发者使用 C&#x2F;C++ 直接在 NVIDIA 的 GPU 上进行通用计算，通过 CUDA 开发者可以更加高效利用 GPU 的并行计算能力，加速各种计算密集型任务……CUDA 的存在让 GPU 资源变成一种通用的计算资源。这是 NVIDIA 在软件领域上的核心，从目前的趋势和 CEO 的态度来看，几乎不存在开源 CUDA 的可能。</p>
+<p>但无论如何，至少开源社区拿到了 GPU 内核模块的源码。</p>
+<h3 id="Kubernetes-GPU-管理"><a href="#Kubernetes-GPU-管理" class="headerlink" title="Kubernetes GPU 管理"></a>Kubernetes GPU 管理</h3><p>从2016年起，Kubernetes 社区中希望能在集群中对 GPU 硬件加速设备进行管理的声音越来越大，对于云用户来说，他们想在 Pod 中能访问到 GPU 设备和驱动目录，以便进行大规模计算。</p>
+<p>阿里的魔搭社区依靠着扎实的虚拟化技术和GPU资源，阔绰地赠送上百小时的计算时长，但依靠的是云主机，在面对大规模计算时可能因为无法抢到有限的计算资源而陷入停摆。</p>
+<p>早在2021年，OpenAI 分享了一篇文章《Scaling Kubernetes to 7,500 nodes》其中记录了他们 Kubernetes 集群规模的成长与经验的分享，这说明在21年前 Kubernetes 社区就已经解决了 GPU 硬件的挂载和管理。</p>
+<p>那么，如果想要在集群内实现 GPU 设备的管理，需要使用哪些技术？</p>
+<p>Linux 中 Cgroups 暴露出来的操作接口是文件系统，它以文件和目录的方式出现在 <code>/sys/fs/cgroup</code> 路径下，可以通过挂载的方式自行挂载 Cgroups，在这个文件夹下会包含 cpuset cpu memory 这样的子目录，这些子目录代表着可以被 Cgroups 所限制的资源种类。</p>
+<p>根据上述推理，如果想要在容器内使用 NVIDIA 的 GPU 设备，那么这个容器必须挂载 GPU 的设备和驱动目录。</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240912143357471.png" alt="image-20240912143357471"></p>
+<p>Kubernetes 在实现 GPU 设备时，直接设置容器的 CRI (Container Runtime Interface) 参数就可以通过 Volume 将 GPU 驱动信息挂载到容器内，这也是 Linux 系统的特点，一切皆文件，只要设置好参数挂载驱动目录后就能直接使用该设备。</p>
+<p>NVIDIA 开源了一个名为<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nvidia-container-toolkit">nvidia-container-toolkit</a>的项目，包含了容器运行时库，用于自动配置容器使用 NVIDIA GPU ，这样可以不需要在启动容器时设置额外的参数。</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240912150116210.png" alt="image-20240912150116210"></p>
+<p>容器化只是第一步，如果要将 Kubernetes 与 Docker 一起使用需要将 Docker 配置为 NVIDIA Container Runtime 的引用，并设置为默认运行时。docker 的 daemon.json 文件内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> </span><br><span class="line">  <span class="attr">&quot;default-runtime&quot;</span><span class="punctuation">:</span> <span class="string">&quot;nvidia&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;exec-opts&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;native.cgroupdriver=systemd&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;log-driver&quot;</span><span class="punctuation">:</span> <span class="string">&quot;json-file&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;log-opts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;max-size&quot;</span><span class="punctuation">:</span> <span class="string">&quot;100m&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;runtimes&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;nvidia&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;nvidia-container-runtime&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;storage-driver&quot;</span><span class="punctuation">:</span> <span class="string">&quot;overlay2&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 Kubernetes 支持的 GPU 方案里所有对硬件加速设备进行管理的功能，都是通过 Device Plugin 插件来实现的。NVIDIA 会实现一个叫做 <strong><a target="_blank" rel="noopener" href="https://github.com/NVIDIA/k8s-device-plugin">k8s-device-plugin</a></strong> 的插件，以官方的调度示例为例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">&lt;&lt;EOF</span> <span class="string">|</span> <span class="string">kubectl</span> <span class="string">apply</span> <span class="string">-f</span> <span class="bullet">-</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">gpu-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">restartPolicy:</span> <span class="string">Never</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">cuda-container</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda10.2</span></span><br><span class="line">      <span class="attr">resources:</span></span><br><span class="line">        <span class="attr">limits:</span></span><br><span class="line">          <span class="attr">nvidia.com/gpu:</span> <span class="number">1</span> <span class="comment"># requesting 1 GPU</span></span><br><span class="line">  <span class="attr">tolerations:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">nvidia.com/gpu</span></span><br><span class="line">    <span class="attr">operator:</span> <span class="string">Exists</span></span><br><span class="line">    <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+
+<p>Device Plugin 会通过 Kubernetes 的 ListAndWatch API 定期向 kubelet 上报该 Node 上 GPU ID 信息，不会包含 GPU 设备的信息，这一点将插件和实际的显卡信息做了解耦，kubelet 通过双层缓存来维护这些 GPU 的 ID 列表，并通过 ListAndWatch API 定时更新。</p>
+<p>当一个 Pod 想使用一个 GPU 时，开发者只需要在resources中添加<code>nvidia.com/gpu: 1</code>这样调度器会从缓存中查询符合条件的Node再对双重缓存里的 Gpu 数量减去相应的数量，完成 Pod 和 Node 的绑定。</p>
+<p>现实的情况是复杂的，一个 Node 上可能包含多个 GPU 设备，这是由硬件资源来决定的，当 Pod 绑定某个 Node 后 kubelet 会根据设备ID 找到对应的设备路径和驱动目录，这些具体的 GPU 信息也是由 Device Plugin 维护。当 kubelet 将这些信息追加在创建容器所对应的 CRI 请求中，CRI 再发给 Docker ，创建出来的容器中自然就会出现这个 GPU 设备。</p>
+<p>这是 Kubernetes 为 Pod 分配 GPU 资源最简单的实现方式，它只能按照 GPU 的个数进行分配，在 Device Plugin 的设计和实现中很难对 ListAndWatch API 做更多的扩展，这源于它本身的扩展性就不好，如果面对一些更复杂的场景需求，是无法通过 Device Plugin 的 API 来实现的。</p>
+<h3 id="GPU-Share"><a href="#GPU-Share" class="headerlink" title="GPU Share"></a>GPU Share</h3><p>随着机器学习对 GPU 资源需求的日益增加，单卡资源的分配已经无法满足机器学习的需求，模型训练的过程中衍生出多种复杂场景：小任务场景下希望能在一张卡上执行多个任务以提高利用率，大任务场景下希望一次训练能调用多张卡进行并行计算。</p>
+<p>如果需要在一张卡上运行多个推理任务，需要解决的问题是：如何在 Pod 之间共享 GPU？</p>
+<p>阿里推出一个开源的 <a target="_blank" rel="noopener" href="https://github.com/AliyunContainerService/gpushare-scheduler-extender?tab=readme-ov-file">GPUShare调度器扩展</a>它基于调度器的扩展和设备插件机制，在 Kubernetes 中实现将一卡分配给多个 Pod，随之而来创建资源也发生了变化：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">binpack-1</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">binpack-1</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span> <span class="comment"># define how the deployment finds the pods it mangages</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">binpack-1</span></span><br><span class="line">  <span class="attr">template:</span> <span class="comment"># define the pods specifications</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">binpack-1</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">binpack-1</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">cheyang/gpu-player:v2</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NVIDIA_VISIBLE_DEVICES</span></span><br><span class="line">          <span class="attr">value:</span> <span class="string">&quot;all&quot;</span></span><br><span class="line">        <span class="attr">resources:</span></span><br><span class="line">          <span class="attr">limits:</span></span><br><span class="line">            <span class="comment"># GiB</span></span><br><span class="line">            <span class="attr">aliyun.com/gpu-mem:</span> <span class="number">8</span></span><br></pre></td></tr></table></figure>
+
+<p>资源的划分不再以卡为单位，而是采用内存G为单位，当使用插件查看共享的 GPU 资源信息时能轻易发现当前集群的 GPU Memory 占比：</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913105232561.png" alt="image-20240913105232561"></p>
+<p>在该项目的 README 能发现共享的解决方案基于<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nvidia-docker">Nvidia Docker2</a>(这个项目现在已经封存了)，通过参考 <a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1ZgKH_K4SEfdiE_OfxQ836s4yQWxZfSjS288Tq9YIWCA/edit#heading=h.r88v2xgacqr">GPU 共享设计</a>完成该项目，虽然<a target="_blank" rel="noopener" href="https://github.com/AliyunContainerService/gpushare-device-plugin">gpushare-device-plugin</a>已经停止维护，但从源码的设计来看可以发现，它的实现方式和 **<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/k8s-device-plugin">k8s-device-plugin</a>**的思路相似，整个过程大致分为三步：</p>
+<ol>
+<li><p>查询所有的GPU ID 设备，如果查询到了，那么更改 Pod 的 Spec 信息</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113457790.png" alt="image-20240913113457790"></p>
+</li>
+<li><p>将Pod 绑定到指定的 Node 上</p>
+</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113535393.png" alt="image-20240913113535393"></p>
+<p>3.如果pod更新成功，更新设备信息</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113724395.png" alt="image-20240913113724395"></p>
+<p>将一个设备信息同时挂载多个 Pod 是实现小任务共享的简单方式，GPU Share 通过插件和调度器动态遍历所有 Pod 的显存信息来计算所能调度的 GPU 资源，以扩展的方式来进行资源分配。这种方式实现成本低，但也会存在问题：GPU 资源不隔离。</p>
+<p>当 Pod 中的计算任务在申请显存时，因为资源的不隔离，所以它实际上能申请超过分配给它的显存数。假设有一张 80G 的显卡，按照正常流程可以分配 4 个 20G 显存的 Pod，当其中的某个 Pod 申请显存时多申请了 5G ，这样会引发资源的抢占从而导致其他 Pod 在申请 GPU 资源时出现显存溢出的错误。</p>
+<h3 id="异构算力虚拟化中间件"><a href="#异构算力虚拟化中间件" class="headerlink" title="异构算力虚拟化中间件"></a>异构算力虚拟化中间件</h3><p>HAMI 是一个异构算力虚拟化中间件，它包含多任务共享一张显卡并可限制分配显存大小，比如可以用显存值(M)或显存比例(百分比)来分配GPU，vGPU 调度器确保任务使用的显存不会超过分配数值。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">resources:</span></span><br><span class="line">  <span class="attr">limits:</span></span><br><span class="line">    <span class="attr">nvidia.com/gpu:</span> <span class="number">1</span> <span class="comment"># requesting 1 vGPU</span></span><br><span class="line">    <span class="attr">nvidia.com/gpumem:</span> <span class="number">21000</span> <span class="comment"># Each vGPU contains 3000m device memory</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用场景：</p>
+<ol>
+<li>云原生场景下需要复用算力设备的场合</li>
+<li>需要定制异构算力申请的场合，如申请特定显存大小的虚拟GPU，每个虚拟GPU使用特定比例的算力。</li>
+<li>在多个异构算力节点组成的集群中，任务需要根据自身的显卡需求分配到合适的节点执行。</li>
+<li>显存、计算单元利用率低的情况，如在一张GPU卡上运行10个tf-serving。</li>
+<li>需要大量小显卡的情况，如教学场景把一张GPU提供给多个学生使用、云平台提供小GPU实例。</li>
+</ol>
+</blockquote>
+<p>它包含显存资源的硬隔离：</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913140735401.png" alt="image-20240913140735401"></p>
+<p>HAMI 包含一个统一的mutatingwebhook，一个统一的调度器，以及针对各种不同的异构算力设备对应的设备插件和容器内的控制组件。</p>
+<p>从它的开发计划表来看，NVIDIA 的 GPU 支持显存隔离，算力隔离，多卡推理。截止到2024年9月13日为止还不能支持华为的卡，从实践上在通过 Helm 安装 HAMI 时会遇到服务器不支持华为的错误，需要删除 Helm Chart 关于相关的资源信息。</p>
+<p>因为支持多卡推理，在现实中在申请内存分配时，可能会遇到访问共享内存错误。Linux 中包含一个共享内存的概念(Shared Memory) 它是一个临时文件系统，可以让用户操作磁盘中的文件一样来读写内存。在多卡推理时会让多个进程高效地存取一些临时文件，实现”进程内快速共享内存”。Linux 系统中<code>/dev/shm</code> 的大小一般为物理内存的一半，但是在 Docker 启动容器时会给 <code>/dev/shm</code>设置一个默认的大小，即 64M。</p>
+<p>Docker 可以通过 <code>--shm-size=1g</code>指定一个容器的 shm 大小，在 Kubernetes 中则可以通过 emptyDir 的方式配置：</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913144943849.png" alt="image-20240913144943849"></p>
+<p>HAMI GPU 资源的强隔离性不能解决所有问题，比较现实的是随之而来的显存碎片化问题，当单卡多任务和多卡多任务的混合场景时，就会出现资源不均衡，碎片化的小任务抢占了多卡支持的大任务，导致 Pending 的情况。</p>
+<p>这种情况可以编写相应的调度策略，无论是按照任务排列的优先级，还是抢占调度的方案都能尽量避免碎片调度的问题。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇介绍了 Kubernetes 在管理 GPU 设备时的具体实现思路，从 Docker 实现 GPU 驱动和设备的挂载，到 Kubernetes 的开源项目来解决大规模的机器学习。可以看到在人工智能领域上，对 Kubernetes 集群的使用要求比以往更高，无论是从 OpenAI 从 2500个节点扩展到 7500 个节点，每个节点仅调度一个 Pod 独占全部资源来达到算力最大利用化，还是在一张卡上执行多个较小的计算任务，这些都离不开 Kubernetes 社区和 CNCF 在人工智能领域的大力支持。</p>
+<p>值得关注的点是阿里虽然开源的项目不再维护，但阿里云的 ACK 已经支持各种异构计算资源进行统一调度和运维管理；HAMI 虽然目前不支持华为的卡，但计划任务中也在积极适配(即使它无法做到多卡支持)；华为的 Volcano 和 NPU 插件能实现在 x86、Arm、GPU、昇腾、昆仑等多元算力的统一调度；</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2024/09/06/Kubernetes%20GPU%20%E7%AE%A1%E7%90%86/">https://silentechoe.github.io/2024/09/06/Kubernetes%20GPU%20%E7%AE%A1%E7%90%86/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Kubernetes/"># Kubernetes</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/09/02/Ceph/">分布式存储Ceph</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
