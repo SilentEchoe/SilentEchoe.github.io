@@ -248,8 +248,7 @@
 <p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913105232561.png" alt="image-20240913105232561"></p>
 <p>在该项目的 README 能发现共享的解决方案基于<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nvidia-docker">Nvidia Docker2</a>(这个项目现在已经封存了)，通过参考 <a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1ZgKH_K4SEfdiE_OfxQ836s4yQWxZfSjS288Tq9YIWCA/edit#heading=h.r88v2xgacqr">GPU 共享设计</a>完成该项目，虽然<a target="_blank" rel="noopener" href="https://github.com/AliyunContainerService/gpushare-device-plugin">gpushare-device-plugin</a>已经停止维护，但从源码的设计来看可以发现，它的实现方式和 **<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/k8s-device-plugin">k8s-device-plugin</a>**的思路相似，整个过程大致分为三步：</p>
 <p>1.查询所有的GPU ID 设备，如果查询到了，那么更改 Pod 的 Spec 信息</p>
-<img src="/Users/kai/Library/Application Support/typora-user-images/image-20240913163041142.png" alt="image-20240913163041142"  />
-
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913171305736.png" alt="image-20240913171305736"></p>
 <p>2.将Pod 绑定到指定的 Node 上</p>
 <img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113535393.png" alt="image-20240913113535393"  />
 
