@@ -13,7 +13,7 @@
 
 
 
-<title>婚礼，聚会和离别 | 面向兴趣编程</title>
+<title>HAMI 源码解析 | 面向兴趣编程</title>
 
 
 
@@ -127,11 +127,70 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">婚礼，聚会和离别</h1>
+            <h1 class="post-title">HAMI 源码解析</h1>
             
                 <div class="post-meta">
                     
@@ -140,14 +199,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">October 9, 2024&nbsp;&nbsp;20:51:00</a>
+                        Date: <a href="#">October 25, 2024&nbsp;&nbsp;13:44:00</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a>
+                                <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">源码解析</a>
                             
                         </span>
                     
@@ -156,24 +215,7 @@
         </header>
 
         <div class="post-content">
-            <p>十月二号是我和董圆圆举行婚礼的日期。</p>
-<p>当我拿着红包敲开她的房门，她身着秀禾，裙摆花瓣般盛开于一床红色中，象白色的团扇半遮着脸，笑眼盈盈看着我。</p>
-<p>这一笑便破了功，呲着牙用团扇抵住试图靠近她的我，我的注意力全在她牙上的口红。</p>
-<p>伴郎们丢出红包雨，房间里全都是小孩子抢红包的欢呼，我在起哄声中被抬起，又被放下。</p>
-<p>她看着窘迫的我，笑得越发的开心。</p>
-<p>我半跪在她的面前，声音哽咽，我听到自己说：谢谢你陪了我这么多年，谢谢你的无比信任，谢谢你的温柔以待。</p>
-<p>我想好好照顾你，我要好好和你在一起，我们必须幸福。</p>
-<p>我看到她轻轻点点头，四周响起掌声，我凑过去拥抱她，她在我耳边轻轻说：“别弄花了我的妆”。</p>
-<p>我们希望婚礼的主题是开心，所以删除了所有煽情的环节，没有父母的祝词，没有互述衷肠的必要，婚礼不过是一场聚会。</p>
-<p>但是当她穿着婚纱向我走来时，我还是抑制不住紧张。</p>
-<p>白色灯光映得她的婚纱闪闪发亮，她戴着公主头冠，此时就是一位真的公主。她站在我的旁边，看着我说，我愿意。</p>
-<p>不是嫁娶，是新的结合。</p>
-<p>我们举起手中的奶茶，向所有宾客举杯敬意。她抛出柿子玩偶，代表事事顺遂。背景音乐全都是她的精挑细选，伴手礼都藏着她的心意。</p>
-<p>即使是聚会，这也是最用心的一次。</p>
-<p>十年前我写相聚的时候一定会提到离别。</p>
-<p>十年后朋友们从四面八方涌来参加我的婚礼，礼毕后又像潮水一样退去，大家各奔前程却又相聚在此。</p>
-<p>时间真是很好的东西，七年多的爱情，十几年的友情，二十多年的亲情，这些经历过时间沉淀的东西才显得祢足可贵。</p>
-<p>我们相聚在此，便是为了下一次的相聚。<br>我们在一起是为了更好的在一起。</p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>HAMI 是一个异构算力虚拟化中间件，它包含多任务共享一张显卡并可限制分配显存大小，比如可以用显存值(M)或显存比例(百分比)来分配GPU，vGPU 调度器确保任务使用的显存不会超过分配数值。</p>
 
         </div>
 
@@ -188,7 +230,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://silentechoe.github.io/2024/10/09/%E5%A9%9A%E7%A4%BC%EF%BC%8C%E8%81%9A%E4%BC%9A%E5%92%8C%E7%A6%BB%E5%88%AB/">https://silentechoe.github.io/2024/10/09/%E5%A9%9A%E7%A4%BC%EF%BC%8C%E8%81%9A%E4%BC%9A%E5%92%8C%E7%A6%BB%E5%88%AB/</a></span>
+                        <span><a href="https://silentechoe.github.io/2024/10/25/HAMI%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">https://silentechoe.github.io/2024/10/25/HAMI%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</a></span>
                     </p>
                 
                 
@@ -212,7 +254,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/%E9%9A%8F%E7%AC%94/"># 随笔</a>
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"># 源码解析</a>
                     
                         
                 </span>
@@ -225,10 +267,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2024/10/25/HAMI%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">HAMI 源码解析</a>
             
-            
-            <a class="next" rel="next" href="/2024/09/18/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%A5%BD%E7%9A%84%E5%BE%AE%E6%9C%8D%E5%8A%A1/">如何设计一个好的微服务</a>
+            <a class="next" rel="next" href="/2024/10/09/%E5%A9%9A%E7%A4%BC%EF%BC%8C%E8%81%9A%E4%BC%9A%E5%92%8C%E7%A6%BB%E5%88%AB/">婚礼，聚会和离别</a>
             
         </section>
 
