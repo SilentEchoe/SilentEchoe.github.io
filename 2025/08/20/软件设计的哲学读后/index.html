@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>《软件设计的哲学》读后 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">《软件设计的哲学》读后</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 20, 2025&nbsp;&nbsp;10:22:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E9%98%85%E8%AF%BB/">阅读</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>《软件设计的哲学》一书通篇围绕”复杂性”进行讨论，作者描述各种导致系统复杂度提升的可能性，也提出了一些通用的思想来降低复杂性。</p>
+<p>作者将复杂性表现分成三种：变更放大，对于软件开发人员来说，如果需要更改多处才能完成一个需求，那么它就是复杂的；认知复杂，如果需要掌握大量的知识才能完成一项任务，当缺少其中部分知识的认知而来带风险，那么就是复杂的;未知复杂：开发人员必须知晓某些信息才能去完成需求，那么这种复杂性是最糟糕的，因为很有可能开发人员连预防风险的认知都没有。</p>
+<p>这三种复杂性的表现几乎随处可见，更改一个需求时需要更改多个类，文件？是否要花很长时间阅读旧代码？是否完全理解该任务所涉及的知识点？更改需求时是否要了解该需求的相关性？对于影响范围有个大概预估？</p>
+<p>本文将会对该书的部分内容进行综合和讨论，将更多的注意力放在技术的范畴，而忽略其工程治理的部分。</p>
+<h3 id="如何降低复杂性？"><a href="#如何降低复杂性？" class="headerlink" title="如何降低复杂性？"></a>如何降低复杂性？</h3><p>有两种方式可以降低复杂性：1.通过使代码更简单，更显而易见来降低复杂性。2.将复杂性封装起来，也就是通过模块化设计来隐藏细节。</p>
+<p>使代码更简单好像是所有[黑客]的追求，各类技术书籍一直强调简单意味着美，优雅来源于简约。在算法领域，用较少的元素完成大量的工作一直被认为是优雅的。现实世界中则存在更复杂的争论，如果一个算法以极少的代码行数实现，但是其他开发人员无法理解。那么这算是简单还是复杂？</p>
+<p>行数并不能衡量复杂性，散落在系统各处浅显重复函数只会增加复杂性。不同的编程语言实现同一需求所产生的代码行数也是不一样的，比如Go语言中大量的 <code>if err != nil</code>判断，这些重复代码几乎占据函数的一半。但是它简单易懂，不会对开发人员的认知产生挑战。</p>
+<p>单一的维度是无法估量复杂性的，书中描述了一个方式来进行估算：<strong>系统的总体复杂度由每个部分的复杂度乘以开发人员在该部分花费的时间加权</strong>。这段话看起来既拗口又难以理解，但是可以通过一个理想的状态来反推它的定义：</p>
+<blockquote>
+<p>我们希望一个系统是显而易见的，开发人员可以不用费力思考就可以明白要做什么，同时确信他所做的是正确的。</p>
+</blockquote>
+<p>一个显而易见降低复杂性的小技巧就是：不要使用特例来构建正常的业务需求。这种特例通常使用某个变量硬编码在代码中，使用<code>if</code>切成不同的逻辑分支。这样虽然能简单快速实现需求，也不会增加开发人员的的认知负担，但是它极容易泛滥，如果没有一个统一的标识符来描述它的一致性，那么很有可能相同的变量充斥多个模块，这样在后续的版本迭代中需要更改多个地方才能继续拓展。</p>
+<p>复杂性由依赖性和模糊性组成。依赖性是软件组成的基础，不可能完全消除它，但是软件设计的目标之一就是减少依赖关系的数量，尽可能使依赖关系保持简单明了。</p>
+<p>回到简单，另外一个例子就是变量名，如果一个变量名太过于”晦涩”或者说它过于”通用”，以至于<code>count</code>这样的变量名随处可见。模糊性会随着时间的推移进一步提高复杂性，当然另一类开发人员会秉持着”变量名越短越好”的观念。你可以在各个社群中看到各种抱怨，简短的变量名缺乏关键信息，过长的变量名显得臃肿难以记忆，这些观点互相碰撞。这两者只是风格问题，当你意识到臃肿就应该思考一个新的变量名来简化它，意识到无法通过几个简单字母就能准确表述其中的意义，那么就应该考虑更多的单词来形容它。理想的状态下它们随着版本迭代最终会趋于一个[中庸]的状态，如果实在无法形容其复杂性，那么至少能为其加上注释，至少要在同一个系统内保持风格的统一。</p>
+<p>最糟糕的状况是什么都不做，随着这些复杂性和模糊性不断堆叠，当然这又涉及到架构治理的概念，也就不在本文的讨论范围内。</p>
+<h3 id="模块化应该如何设计？"><a href="#模块化应该如何设计？" class="headerlink" title="模块化应该如何设计？"></a>模块化应该如何设计？</h3><p>最理想的情况下每一个模块都独立于其他模块，开发者可以在模块内独立工作，而对模块一无所知。良好设计的模块将所有改动仅限于该模块内，在架构设计中已经划分好优秀的边界，那么基于这样理想状态下，系统的复杂程度就是设计得最差的模块的复杂度。它不再是一个复杂的数学公式，而是一个”木桶短板理论”。</p>
+<p>更普遍的情况则是模块与模块互相依赖，互相调用，当开发者更改其中一个模块，那么也需要更改上下游的其他模块。更糟糕的情况是更改了某个函数的入参，则不可避免更改整个调用链路。微服务中的复杂程度之所以呈几何倍数增长，在于数个服务共同完成同一个功能模块，当其中一个服务发生改变时整个请求链路都会受到影响。</p>
+<p>当然对于系统中的独立模块来说还不至于这么复杂，为了进一步降低复杂性模块一般会分成两个部分：接口和实现。接口只描述模块对外提供的功能，而不描述具体细节。实现则执行接口所承诺的目标。这样开发者无需深入了解模块是如何实现的，只需知晓应该如何调用，以及返回值的意义(更好的情况下还会有注释)。</p>
+<blockquote>
+<p>模块化设计的目标是最大程度<strong>减少模块之间的依赖性。</strong></p>
+</blockquote>
+<p>大部分编程语言都会确保接口中方法调用的安全性，静态语言中编译器会检查接口方法的参数和返回值以及类型是否正确，动态语言虽然没有编译器的严格检查，但是会通过鸭子类型(Duck Typing)来遵从”契约”，从这点来看接口更像是模块化中严格对外的出入口。</p>
+<p>书中提到:<strong>在模块化编程中，每个模块以其接口的形式提供抽象。该接口提供了模块功能的简化视图；从模块抽象的角度来看，实现的细节并不重要，因此接口中会将其省略掉</strong>。其背后代表的是高度抽象化，将不重要的细节屏蔽掉，只保留真正重要的部分。在这个过程极容易出错：接口包含了不必要的复杂信息；接口忽略了真正重要的细节;这两种情况都会增加开发者的认知负担，前者过于模糊不清，后者则无法达到预期的目的。</p>
+<p>ORM提供了不同数据库读写的实现，它的本质是为了屏蔽各个数据库的差异，以一个统一规范的接口暴露读写方法，让开发者使用相同的业务代码就能支持多种数据库。但是数据库中的<strong>事务隔离，锁等待，并发控制</strong>等细节都被屏蔽掉了。不同数据库的隔离级默认值也不相同，所以ORM通常会提供Begin&#x2F;Commit&#x2F;Rollback等方法对外暴露事务的控制。</p>
+<p>抽象是为了管理复杂性。</p>
+<p>一个好的模块应该是通过简单的接口实现强大的功能，最有代表性的是Unix操作系统提供文件I&#x2F;O机制，通过打开，读&#x2F;写，查找，关闭五个接口来实现各种复杂的问题。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">open</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* path, <span class="type">int</span> flags, <span class="type">mode_t</span> permissions)</span>;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">read</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span>* buffer, <span class="type">size_t</span> count)</span>;</span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">write</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="type">void</span>* buffer, <span class="type">size_t</span> count)</span>;</span><br><span class="line"><span class="type">off_t</span> <span class="title function_">lseek</span><span class="params">(<span class="type">int</span> fd, <span class="type">off_t</span> offset, <span class="type">int</span> referencePosition)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">close</span><span class="params">(<span class="type">int</span> fd)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>Unix I&#x2F;O接口的实现已经发生了根本性的变化，从早期的磁带到机器硬盘再到现在的SSD；从本地文件系统到网络文件系统(NFS)，再到各种分布式文件系统;但是基于内核调用并没有改变，因为它们在抽象层次上足够简洁，且几乎覆盖了所有I&#x2F;O场景。无论是磁盘文件，Socket，设备驱动等都可以通过这套接口来访问。</p>
+<p>Linux一直强调的”一切皆文件”哲学概念背后体现出来的是：简单而通用的抽象才能经历时间的考验。</p>
+<p>但是并非所有的抽象都如Unix I&#x2F;O一样成功，抽象一旦处理不当就会造成反效果——信息泄漏，它在模块之间创建了依赖关系：<strong>对该设计决策的任何更改都将要求对所有涉及的模块进行更改</strong>。</p>
+<p>一个常见的设计错误就是按照操作顺序来划分模块。一个文件读写的功能被错误地划分为FileReader,FileModifier,FileWriter三个模块。这种分解方式实质上是在照搬用户的操作顺序，结果是产生大量“浅方法”，并且让多个模块都不得不理解文件格式(编码、结构等)这增加了维护复杂度，并容易在系统中泛滥。</p>
+<p>更合理的设计是以<strong>单一知识点</strong>来划分模块：把“文件操作”集中在一个类中，该类同时负责读与写，并通过统一接口对外暴露。调用者只需理解接口语义，而无需关心底层格式如何实现。</p>
+<blockquote>
+<p>设计新模块时，面临的最普遍的决定之一就是是以通用还是专用方式实现它。</p>
+</blockquote>
+<p>另外一种设计错误就是想通过一种”更通用”的方式实现它，通用的好处当然很明显，它类之间有着更清晰的分割，可以更好地隐藏信息，减轻了认知负担；但过度追求通用性模块将会迅速膨胀，在接口中过度追求抽象共同点往往困难且代价高昂，可能无法解决遇到的特定问题，此时需要衡量聚合的代价，可以参考以下三点标准：</p>
+<ol>
+<li><strong>依赖同一知识点</strong>：两段代码依赖相同的语法&#x2F;语义规则（如文件格式、协议定义），它们就是紧密相连的。</li>
+<li><strong>常见使用组合</strong>：使用其中一段代码的人，往往也需要使用另一段（如读文件与写文件），则应聚合。</li>
+<li><strong>语义互补性</strong>：单独存在时难以表达清晰的意图，放在一起才能展现原作者设计意图（如字符串的查找与转换）</li>
+</ol>
+<p>设计一个新模块时应该仔细考虑可以在模块中隐藏那些信息。如果可以隐藏信息则应该还能简化模块的接口，这会让模块更加”深”。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>设计是一个权衡的过程，如何用最小的成本实现最多的功能，如何设计良好的拓展性，如何让代码变得更简洁更优雅，这些都是需要在设计时反复思考的。第一次设计得出的方案可能不是最优解，按照过往的经验判断，需要重复设计几次后才<strong>可能</strong>找到最合适的方案。随着时间的推移，版本的迭代，设计的投资时长会越来越多，但这些都是必要的成本。</p>
+<blockquote>
+<p>当发生错误的决策时不要置之不理，要一点一点修复它，改进它。</p>
+<p>尝试选择彼此根本不同的方法，即使确定只有一种合理的方法，无论如何也要考虑第二种设计，不管你认为它有多糟糕。考虑该设计的弱点并将它们与其他设计的特征进行对比将很有启发性。</p>
+</blockquote>
+<p>在读完全书后，印象最深的一句话是：”在开发模块时，为了减少用户的痛苦，要找机会给自己多吃一点苦”。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2025/08/20/%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%93%B2%E5%AD%A6%E8%AF%BB%E5%90%8E/">https://silentechoe.github.io/2025/08/20/%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%93%B2%E5%AD%A6%E8%AF%BB%E5%90%8E/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%AE%BE%E8%AE%A1/"># 设计</a>
+                    
+                        <a href="/tags/%E8%AF%BB%E5%90%8E/"># 读后</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/10/09/%E5%A9%9A%E7%A4%BC%EF%BC%8C%E8%81%9A%E4%BC%9A%E5%92%8C%E7%A6%BB%E5%88%AB/">婚礼，聚会和离别</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
