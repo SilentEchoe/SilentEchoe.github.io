@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>消息队列入门 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">消息队列入门</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 5, 2025&nbsp;&nbsp;14:12:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/">中间件</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>消息队列的雏型可以追溯到早期操作系统与分布式系统的研究。当时，跨进程通信带来了一种迫切的需求：<strong>如何在不同进程之间高效且安全地传递信息</strong>。直到 1993 年，IBM 推出了 MQSeries（IBM MQ 的前身），才真正将“消息中间件”这一概念推向商业化舞台，并极大地推动了分布式系统的发展。</p>
+<p>如今，消息队列已经成为分布式系统与云原生架构中不可或缺的基础组件。</p>
+<h3 id="什么是消息队列？"><a href="#什么是消息队列？" class="headerlink" title="什么是消息队列？"></a>什么是消息队列？</h3><p>队列作为一种先进先出的数据结构，消息队列在此基础上实现了更复杂的机制。对于开发者来说，可以直接将消息队列视为一个消息容器，由该容器负责实现严格有序的数据排列与数据安全的保证。</p>
+<p>在传统的单体系统中，依靠系统时间戳就能较为简单地实现先进先出的线性顺序。但在分布式系统中，<strong>“不可靠的时钟”</strong> 显然无法作为唯一的凭证：不同节点的物理时钟存在偏差，网络延迟又可能导致事件发生顺序与时间戳顺序不一致，从而破坏了 FIFO 的语义。</p>
+<p>因此，在分布式场景下，无论是 <strong>高并发业务</strong>、<strong>金融系统对强一致性的严格要求</strong>，还是 <strong>云原生环境中的弹性架构设计</strong>，消息队列必须提供更强的保证。它不仅要容纳来自多个服务的消息，还要在此基础上维持严格的顺序控制与可靠交付，以确保 FIFO 原则在复杂环境下依然成立。</p>
+<h4 id="异步处理"><a href="#异步处理" class="headerlink" title="异步处理"></a>异步处理</h4><p>在同步请求的情况下，当客户端发起一个请求，服务端接收请求后，会立即进行数据或业务逻辑的处理，操作成功后再将结果返回给客户端。此时客户端必须等待整个处理过程，这个请求耗时由网络，服务端业务处理，数据库的读写等多种因素来决定。</p>
+<p>当引入消息队列后，服务端在接受到客户端发起的请求，会直接将请求写入到消息队列，然后立马返回给客户端，由其他独立的消费者服务异步处理后续任务。这种模式能显著减少客户端等待时间，在高并发的场景中，消息队列还能<strong>削峰</strong>的作用，不仅提高系统吞吐量，也提升整体的健壮性（避免服务被流量高峰直接冲垮）。</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20250903151702750.png" alt="image-20250903151702750"></p>
+<p>用户提交的请求在写入消息队列后就会立即返回给用户，但这不意味着请求一定会被成功处理。服务端在后续消费这些业务消息时，可能会出现<strong>消息处理失败</strong>，比如业务逻辑异常，服务处理处理超时等。所以需要配合重试机制，比如重试策略来保证最终一致性。</p>
+<p>单机系统中实现一个“异步处理”相对简单，Go语言中的<code>channel</code>就能起到”异步”和”解耦”的作用，生产者把消息写入<code>chan</code>，消费者<code>goroutine</code>从<code>chan</code>读取信息再进行处理。但是我想说在一个分布式系统中，这完全是两个层面的概念。如果单纯引入异步处理而引入消息队列，能获得的最大好处在于可以<strong>跨进程，跨主机，跨数据</strong>。<code>channel</code>只能在一个进程内使用，在微服务架构中，生产者和消费者是不同服务，甚至跑在不同节点。<code>channel</code>中如果服务崩溃则全量丢失，而消息队列提供可靠的持久化以及指定offset消费的能力。</p>
+<p>channel解决的是同一进程内的异步通信，而消息队列解决的是分布式系统的异步通信。</p>
+<h4 id="削峰-x2F-限流"><a href="#削峰-x2F-限流" class="headerlink" title="削峰&#x2F;限流"></a>削峰&#x2F;限流</h4><p>在大型系统中，流量往往会在特定时间段集中爆发，例如上下班的早晚高峰、促销活动或秒杀场景。由于数据库的并发承载能力通常存在上限，直接将所有请求写入数据库可能导致系统过载甚至崩溃。</p>
+<p>比较常见的做法是先由业务服务将用户请求写入消息队列，再由消费服务按照一定速率逐步处理这些事务性消息，这一过程本质上是一种延迟执行。”削峰”机制将消息队列作为服务与数据库之间的”缓冲区”，吸收瞬时流量带来的冲击，并将一部分流量延后处理，使系统在高并发场景下能够更平稳地运行。</p>
+<p><img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20250904111053832.png" alt="image-20250904111053832"></p>
+<p>消费者服务在从消息队列中读取并处理请求时，往往会以一个相对稳定的速率来执行，这本身就体现了<strong>限流</strong>的效果。然而，如果消费速度跟不上请求产生的速度，就会导致消息在队列中不断<strong>积压</strong>，形成一种“系统扛住了流量冲击”的<strong>假象</strong>。</p>
+<p>比较符合直觉的做法是通过<strong>增加消费服务的数量</strong>来提升整体处理能力，这在一定程度上确实能缓解积压问题。但这并非是一个一劳永逸的方案，它会受到消息队列中<strong>分区模型</strong>的限制。</p>
+<p>以Kafka为例，它有两个特别重要的概念：主题(Topic)和分区(Partition)。Topic是一个逻辑上的概念，它可以被细分为多个分区，一个分区只属于某一个主题，同一主题下的不同分区包含的消息是不同的。而在消费端(Consumer Group)内的消费者会与这些分区进行绑定，Kafka中的协调器会根据<strong>分配策略</strong>来分配分区与消费者的对应关系，每当消费者的加入或离开都会触发这个重新分配。</p>
+<p>消费者与消费组这种模型可以让整体的消息能力具备横向伸缩性，如果消费者过多，出现了消费者数量大于分区数量的情况，就会有消费者分配不到任何区，从而造成部分消费者无法消费任何信息。</p>
+<p>因此，当分区数量与消费者实例数量相等时，单纯增加消费者是无法继续提升吞吐量的。</p>
+<img src="https://raw.githubusercontent.com/SilentEchoe/images/main/image-20250904140344998.png" alt="image-20250904140344998" style="zoom: 50%;" />
+
+<h4 id="降低系统耦合性"><a href="#降低系统耦合性" class="headerlink" title="降低系统耦合性"></a>降低系统耦合性</h4><p>传统服务架构中，服务之间通过直接调用来进行交互，例如A服务通过REST风格的API调用B服务，在这种情况下，A与B存在强耦合关系。如果B服务宕机，A服务无法得到正常的响应；如果B接口发生变动，A服务必须同步进行修改；如果B处理缓慢，A服务则被迫阻塞。当请求的调用链变长，很有可能出现服务降级，响应超时等问题。</p>
+<p>引入消息队列来降低系统的耦合，主要体现在订阅&#x2F;发布模式上。A服务不再直接调用B服务，而是直接把消息写入消息队列。这意味着A服务和B服务不需要同时在线，也不需要关心有消费者服务的数量，地理位置，实现逻辑等。它只关心是否能将消息成功写入消息队列。</p>
+<p>另一方面，消费者服务并不关心消息是如何产生的，它只需要监听消息并处理。消费者服务可以随时扩展，替换，甚至可以使用不同编程语言实现同一类型的逻辑处理，这在新技术的引入时非常有用。</p>
+<p>消息队列中不同的产品实现消息存储和投递的具体细节都不同，比如Kafka会直接将消息写入磁盘日志，上述提到kafka中消费者通过Consumer Group消费组这一概念，由协调器来分配分区，一个分区只会被一个Group内的一个Consumer消费，消息也不是通过“多播”来通知消费者，而是消费者主动拉取并commit自己的offset。</p>
+<p>消息队列不仅只能使用发布&#x2F;订阅模式，还有点对点的订阅模式，在强调降低耦合性的语境中，消息队列中发布&#x2F;订阅模式无疑是使用最广泛的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇文章简要介绍了消息队列在分布式系统中的使用，通过消息队列可以得到异步处理，削峰&#x2F;限流，降低系统耦合性这三个好处。但盲入引入消息队列会让系统的复杂性进一步提高，异步处理确实可以提高系统的响应速度，但是如果某些消息没有被正确处理，极端情况下造成消息丢失，这些都增加了风险和排查问题的难度。基础设施方面也需要一定投入，对消息队列的可观测性，比如消息积压，节点状态。运维成本，运维方面还需要维护消息队列集群，增加机器，资源等。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2025/09/05/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%85%A5%E9%97%A8/">https://silentechoe.github.io/2025/09/05/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%85%A5%E9%97%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"># 学习笔记</a>
+                    
+                        <a href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/"># 中间件</a>
+                    
+                        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"># 消息队列</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/08/20/%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%93%B2%E5%AD%A6%E8%AF%BB%E5%90%8E/">《软件设计的哲学》读后</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
