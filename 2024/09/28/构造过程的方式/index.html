@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>构造过程抽象 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">构造过程抽象</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 28, 2024&nbsp;&nbsp;13:25:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>如果想要设计一个程序，需要考虑哪些元素？是数据的录入？还是数据的查询？亦或是操作数据的过程？还是应该考虑使用哪种编程范形？</p>
+<p>编程范式在如今不是一个新的话题，初学者中在学习任何一门高级编程语言时都会被“面向对象”，“函数式编程”，“过程式编程”等风格影响，以构建出来不同风格的程序。编程范形会告诉初学者应该禁止使用哪些技术，同时允许哪些。当然，对于初学者来说可能并不会意识到自己被编程范式所影响，他们可能对此一无所知。那些晦涩的概念很容易让人失去兴趣，转而被高级编程语言本身的细节所吸引，而忽视掉抽象的这一核心思想。</p>
+<p>不同高级编程语言会有不同的优势，比如C语言的强大灵活，Go的并发设计，Rust的安全等。作者本人初次接触高级编程语言也会沉迷它的细节，在接触到更多的编程语言后也会赞叹某一种语言的设计的精巧，回过头再来思考这些语言，它们是否存在某些共性？</p>
+<p>无论哪一种编程范式都会包含三个要素：<strong>基本表达形式</strong>用来表示程序构建的最小单位；<strong>组合方法</strong>用来将简单元素构建为复合元素；<strong>抽象方法</strong>：将复合对象命令，将它们作为一个单位来操作。</p>
+<p>本系列文章将会逐一解析这三个要素，并参考《计算机程序的构造和解释》一书从”面向过程”的角度来解释它们背后表达出来的思想。</p>
+<h3 id="构造过程抽象"><a href="#构造过程抽象" class="headerlink" title="构造过程抽象"></a>构造过程抽象</h3><p>如果说程序的本质就是计算，可能会让人觉得过于片面和含糊不清，计算只是程序能力的一部分。从底层说起它包含更加复杂的定义，比如指令集，数据结构和算法，逻辑和控制等。现如今任何一种高级编程语言都会包含：表达数字和算术运算的方式；提供将多种基础元素组合在一起的复合元素方法；定义一种抽象方式来概括某一系列复合元素。</p>
+<p>SICP 第一章开篇，作者提到：”Computer programs are a means of communication. We use them to tell a computer what to do, but more fundamentally, we use them to communicate ideas about processes.”</p>
+<blockquote>
+<p>计算机程序是一种沟通的手段。我们用它们来告诉计算机应该做什么，但是根本上，我们用它来表达关于’过程’的思想。</p>
+</blockquote>
+<p>从工程实践的角度来看，“程序是写给其他程序员看的，只是恰好能被计算机执行”则是另一种观点的表达，但是它们都表示出一种共同的理念：程序是表达开发者解决某一领域问题的解题思路。</p>
+<p>那么过程应该如何被构造？</p>
+<p>最基础的就是表达式和运算符，数字的表达式可以和各种运算符组合起来，形成一个运算符组合式，比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">2</span> * <span class="number">5</span>) / (<span class="number">3</span><span class="number">-1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>为了更贴近我们的生活，编程语言会提供括号来做分组计算，如果抛开括号，语言也会遵循常规的规则：乘除运算符号会优先于加减运算符，并且这些都是<strong>左结合。</strong></p>
+<blockquote>
+<p>运算符优先级相同的情况下，从左边向右边计算，就是左结合。</p>
+</blockquote>
+<p>在面对复杂的表达式<code>3 * 12 * (25/5) + 83 / 25 * 10</code>，依托于解释器的强大可以很快得出结论：213.2，但如同上述中我们提到的，程序构建的代码是要写给其他程序员看的，我们面对这样复杂的表达式难以清晰快速进行计算。</p>
+<p>当用一个带分支的结点表示每一个最基础的组合式，用树形来看待求值过程，可以想象运算结果从下往上传递，最终构建出一颗倒立的“树”:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        [213.2]</span><br><span class="line">        /     \</span><br><span class="line">     [180]    [33.2]</span><br><span class="line">    /   \     /     \</span><br><span class="line"> [36]   [5]  [3.32] [10]</span><br><span class="line"> /  \   / \   / \</span><br><span class="line">3  12  25  5 83  25</span><br></pre></td></tr></table></figure>
+
+<p>高级编程语言都会提供一些抽象的手段，用一个变量来代表一个基础的数字或字母，亦或一段文本。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="number">3.1415926</span></span><br><span class="line">b := a * <span class="number">2</span></span><br><span class="line">&gt; <span class="number">6.2831852</span></span><br></pre></td></tr></table></figure>
+
+<p>解释器会把<code>3.1415926</code>与<code>常量a</code>关联起来，在后续的代码中可以通过使用该常量来代替它的真实值。这是为了在构建复杂的计算过程中屏蔽掉部分的细节，如果每次要使用<code>3.1415926</code>就必须记住整串数字，在庞杂的代码中复杂度会不断提升。解释器通过这种方式来降低视觉上的复杂性，同时让工程师逐渐建立对象关联，从而一步一步构建更加复杂的计算过程。</p>
+<p>而<strong>函数</strong>则是更强大的抽象技术，通过函数可以自定义一个名称，并将其<strong>关联</strong>一组复合操作，像使用常量一样来使用这组复合操作:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	fmt.Println(square(<span class="number">3</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">square</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> x * x</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&gt; <span class="number">9</span></span><br></pre></td></tr></table></figure>
+
+<p><code>func</code>关键字是表达声明一个<strong>函数</strong>，square 则是函数的名称，意味着 square 这个函数名会与 <code>x * x</code> 这个运算过程相关联，x 被称为 parameters(形式参数)，它们被用在函数体中，相当于声明一个变量，但它的<strong>作用域</strong>仅限于这个函数中。<code>return</code>关键字用于返回函数的计算结果，这里只是简单返回一个表达式的计算结果。</p>
+<blockquote>
+<p>过程的形式参数在过程体里扮演着一种非常特殊的角色，形参的具体名字不重要。如果在一个完整的过程定义里将某个约束变量统一换名，这一过程定义的意义将不会有任何改变。如果一个变量不是被约束的，可以把它称为“自由的”。一个名字的定义被约束于的那一集表达式称为这个名字的作用域。在一个过程定义里，被声明为这个过程的形式参数的那些约束变量，就以这个过程的体作为它们的作用域。</p>
+</blockquote>
+<p>我们解析一个程序时会发现无论多复杂的程序，都是由基础对象组合构建出复杂对象，基础函数构建出复杂函数。如果把函数当作一个过程定义，那么它可以能隐藏一些运算过程，也就是隐藏一些细节，更通俗的说法是把函数当作一个黑盒，其他工程师只用关注这个函数的“作用”，即输入什么然后得到什么。依靠函数名来重复使用这些函数，而不用重复拷贝这些运算过程，这点极大地提高了便利性，也能直接使用其他函数或自身来构建出更复杂的函数，最后一步一步构建出应用。</p>
+<blockquote>
+<p>数学函数和计算机函数的明显区别在于，说明性知识与行动性知识之间的差异。数学中人们更关心”是什么”，在计算中人们则更关心”怎么做”。而且计算机函数必须是有效可行的。</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;math&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> tolerance = <span class="number">0.00001</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断两个浮点数是否接近</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isGoodEnough</span><span class="params">(guess, x <span class="type">float64</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> math.Abs(guess*guess-x) &lt; tolerance</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 改进猜测</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">improve</span><span class="params">(guess, x <span class="type">float64</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> (guess + x/guess) / <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 递归尝试求平方根</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sqrtIter</span><span class="params">(guess, x <span class="type">float64</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> isGoodEnough(guess, x) &#123;</span><br><span class="line">		<span class="keyword">return</span> guess</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sqrtIter(improve(guess, x), x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 外部调用接口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sqrt</span><span class="params">(x <span class="type">float64</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> sqrtIter(<span class="number">1.0</span>, x) <span class="comment">// 初始猜测为 1.0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;sqrt(9) =&quot;</span>, sqrt(<span class="number">9</span>))</span><br><span class="line">	fmt.Println(<span class="string">&quot;sqrt(2) =&quot;</span>, sqrt(<span class="number">2</span>))</span><br><span class="line">	fmt.Println(<span class="string">&quot;sqrt(0.01) =&quot;</span>, sqrt(<span class="number">0.01</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>sqrt</code>函数作为SICP中第一个手工定义的函数实现计算过程的例子，它展现了一部分函数的特性：通过调用其他函数来构建出一个复合函数；将<code>sqrtIter</code>函数当作一个黑盒使用；将一个计算过程分解成若干个子问题，还展示了如何不使用迭代器来实现迭代，然后通过简单的独立函数共同计算来解决问题;</p>
+<blockquote>
+<p>一个函数就是一个计算过程的<strong>局部演化</strong>的模式，它描述了这个过程中每个步骤如何在前面步骤的基础上进行。</p>
+</blockquote>
+<h3 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h3><p>当提到递归的时候，指的是一个函数直接或间接引用了该函数本身。阶乘函数是最简单利用”递归”这一方法来计算<code>n*(n-1)</code>的方式</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(factorial(<span class="number">4</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//递归</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">factorial</span><span class="params">(n <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> n * factorial(n<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//循环</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">factorial</span><span class="params">(n <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	result := <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">2</span>; i &lt;= n; i++ &#123;</span><br><span class="line">		result *= i</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中，<code>factorial</code>函数有两种写法，一种是使用递归，第二种是使用<code>for</code>关键字循环来计算结果。在各种教程中<strong>递归</strong>是一种强表达力的方式，它在解决树，图，分治算法等场景非常简洁优雅，但是它会带来性能和栈空间的开销，相比之下循环更适合性能敏感的代码。</p>
+<p>当调用一个函数时，程序会在<strong>调用栈</strong>为它分配一个”栈帧”，然后保存<strong>函数的参数，局部变量，返回地址</strong>。递归调用时每一层都会新增一个栈帧，这意味着在内存中会存在4个栈帧:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">factorial(4)</span><br><span class="line"> → factorial(3)</span><br><span class="line">   → factorial(2)</span><br><span class="line">     → factorial(1)</span><br></pre></td></tr></table></figure>
+
+<p>在Go语言中<code>goroutine</code>虽然可以动态扩容，但是它也是存在限制的，最大可达到1G的栈大小，不可能无限递归下去。相比之下循环则不会增加栈帧，永远只固定那点内存。当递归执行时每次都需要压栈和出栈，循环在同一个作用域中修改局部变量，减少了调用和恢复的过程。</p>
+<blockquote>
+<p>递归是用空间换简洁性，循环是用变量控制流程。递归要谨慎使用，特别要注意结束递归的条件。</p>
+</blockquote>
+<h4 id="树形递归"><a href="#树形递归" class="headerlink" title="树形递归"></a>树形递归</h4><p>斐波那契数列的计算如果使用树型递归来表示，这一计算过程像是一棵树：分支在每一层都分裂成两个不同的分支，层层递进。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//树形递归</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fib</span><span class="params">(a, b, count <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> count == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> b</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> fib(a+b, a, count<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//线性迭代</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fact</span><span class="params">(n <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> n * fact(n<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>线性迭代和树形递归会产生巨大的差异……这里的差异主要在性能方面，无论是空间还是时间上树形递归都远不如线性迭代。</p>
+<p>虽然树形递归的计算过程可能非常低效，但是它很容易描述和理解。它把一个大的问题分解成了多个小的问题，这种思维方式天然契合树状结构，也进一步可视化复杂程度是如何产生的。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Fib(5)</span><br><span class="line">├─ Fib(4)</span><br><span class="line">│  ├─ Fib(3)</span><br><span class="line">│  │  ├─ Fib(2)</span><br><span class="line">│  │  │  ├─ Fib(1) = 1</span><br><span class="line">│  │  │  └─ Fib(0) = 0</span><br><span class="line">│  │  └─ Fib(1) = 1</span><br><span class="line">│  └─ Fib(2)</span><br><span class="line">│     ├─ Fib(1) = 1</span><br><span class="line">│     └─ Fib(0) = 0</span><br><span class="line">└─ Fib(3)</span><br><span class="line">   ├─ Fib(2)</span><br><span class="line">   │  ├─ Fib(1) = 1</span><br><span class="line">   │  └─ Fib(0) = 0</span><br><span class="line">   └─ Fib(1) = 1</span><br></pre></td></tr></table></figure>
+
+<p>每一次计算都会分裂成两个子计算，最终形成树。其中Fib(3)计算了两次，Fib(2)计算了三次。随着n不断增大，树的节点快速膨胀，重复计算的节点增多，导致树形递归效率低下。</p>
+<h4 id="尾递归"><a href="#尾递归" class="headerlink" title="尾递归"></a>尾递归</h4><p>某个函数的最后一步就是调用另外一个函数。尾调用不一定出现在函数尾部，只要是最后一步操作即可。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(x)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> g(x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是这种不属于尾调用，因为调用后还存在操作</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(x)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> g(x) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 属于尾调用</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(x)</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (x &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> m(x)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> n(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>尾调用优化：尾调用之所以与其他调用不同，在于它的特殊的调用位置。</p>
+<p>函数调用会在内存形成一个“调用记录”，又称”调用帧”（call frame），保存调用位置和内部变量等信息。如果在函数A的内部调用函数B，那么在A的调用记录上方，还会形成一个B的调用记录。等到B运行结束，将结果返回到A，B的调用记录才会消失。如果函数B内部还调用函数C，那就还有一个C的调用记录栈，以此类推。所有的调用记录，就形成一个<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%B0%83%E7%94%A8%E6%A0%88">“调用栈”</a>（call stack）。</p>
+<p>尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用记录，因为调用位置，内部变量等信息都不会再用到了，只要直接用内层函数等调用记录，取代外层函数等调用记录就好了。这就叫做”尾调用优化”（Tail call optimization），即只保留内层函数的调用记录。如果所有函数都是尾调用，那么完全可以做到每次执行时，调用记录只有一项，这将大大节省内存。这就是”尾调用优化”的意义。</p>
+<h3 id="增长的阶和求幂"><a href="#增长的阶和求幂" class="headerlink" title="增长的阶和求幂"></a>增长的阶和求幂</h3><p>SICP中“增长的阶”其实就是<strong>渐进复杂度(Order of Growth)<strong>，它用来</strong>衡量一个算法在输入规模不断增大时，运行时间或占用空间会如何变化</strong>。重点是<strong>趋势</strong>，而不是精确的数值，所以一般用<strong>数量级</strong>来概括它。</p>
+<p>当数据规模很小时，不同算法之间的差异无法直观呈现出来。但是在处理大量数据时，效率差异就会被放大，这时就必须要考虑它的增长方式。可能部分读者在接触算法时了解过<strong>大 O 表示法（Big-O Notation）</strong>，这里要澄清一下这两者之间的关系。</p>
+<p>渐进复杂度是一个更加宽泛的概念，SICP中提到的线性阶、对数阶、指数阶是它的分类。而大O表示法是用来描述前者<strong>数学符号工具</strong>，比如用O(log n)这样的符号来表示二分查找。</p>
+<p>以<strong>求幂（b^n）</strong>为例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Expt 线性递归实现 b^n</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Expt</span><span class="params">(b, n <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b * Expt(b, n<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// FastExpt 快速幂实现 b^n</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">FastExpt</span><span class="params">(b, n <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> n%<span class="number">2</span> == <span class="number">0</span> &#123; </span><br><span class="line">		half := FastExpt(b, n/<span class="number">2</span>)</span><br><span class="line">		<span class="keyword">return</span> half * half</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b * FastExpt(b, n<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序表面显出的数据结构和运行的本质代码可能不一样，使用线形递归看起来优雅又直观，但是增长的阶是<strong>指数级</strong>，在大规模输入的情况下会很缓慢。<code>FastExpt</code>虽然逻辑相对复杂，但是增长的阶只有<strong>对数级</strong>。</p>
+<p>这其中的区别在于<code>b^5 = b * b * b * b * b</code>每次都把n减1，直为0，调用次数由n来决定，所以它表示为<code>O(n)</code>。</p>
+<p>当使用快速幂实现时，先把指数按二进制拆解，通过不断平方法和乘法实现。b的五次方会变成：<code>b^5 = b^4 * b = b ^ (2^2) * b</code>，这种方式和二分法的思想是一样的，通过每次把问题规模折半，逐步缩小范围，直到计算出答案。它表示为<code>O(log n)</code>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FastExpt(2, 5)</span><br><span class="line">= 2 * FastExpt(2, 4)</span><br><span class="line">= 2 * (FastExpt(2, 2) ^ 2)</span><br><span class="line">= 2 * ((FastExpt(2, 1)) ^ 2)</span><br><span class="line">= 2 * ((2 * FastExpt(2, 0)) ^ 2)</span><br><span class="line">= 2 * (2 ^ 2)</span><br><span class="line">= 2 * 4</span><br><span class="line">= 32</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="高阶函数抽象"><a href="#高阶函数抽象" class="headerlink" title="高阶函数抽象"></a>高阶函数抽象</h3><p>从作用的角度来看，函数也是一类抽象，它们描述了一些对数值的复合操作，但是不依赖特定的数。可以把函数看作一个代数公式，在讨论函数的时候并不是讨论某个具体的数，而是<strong>对一类操作的抽象</strong>。函数把“数据处理的模式”提取出来，成为可复用的抽象。</p>
+<p>在定义函数时，使用形参来代替某个数值，也是表达了这个思想：描述一个数的类型，而不描述具体的数值。函数也不等于某一个数值，而是描述某一个操作模式<code>(define (square x) (* x x))</code>即：给这个函数一个数，这个函数会返回它的平方。</p>
+<p>函数的讨论不是为了得到它的最终值，而是描述“它做了什么”。当然我们也可以不使用函数来构建程序，但是这未免太过繁琐。</p>
+<blockquote>
+<p><strong>人们对功能强大的程序设计语言有一个必然要求，就是能为公共的模式命名，建立抽象，然后直接在抽象的层次上工作。过程提供了这种能力。</strong></p>
+<p>同样的程序设计模式被用于描述不同函数的情况，为了把这样的模式描述为<strong>概念</strong>，就需要构造另一类函数，它们以函数作为参数，或者以函数作为返回值。这种操作函数的函数被称为<strong>高阶函数</strong>。</p>
+</blockquote>
+<h4 id="函数作为参数"><a href="#函数作为参数" class="headerlink" title="函数作为参数"></a>函数作为参数</h4><p>在SICP中一个非常重要的概念是<strong>过程本身也可以作为参数传递</strong>，就像数据可以作为参数传递一样。开发者很容易就实现一种”通用模式”，把“如何处理”的细节交给作为参数传入的函数去决定。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Sum 抽象的求和函数</span></span><br><span class="line"><span class="comment">// term: 对当前元素做什么</span></span><br><span class="line"><span class="comment">// next: 如何得到下一个元素</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sum</span><span class="params">(a, b <span class="type">int</span>, term <span class="keyword">func</span>(<span class="type">int</span>)</span></span> <span class="type">int</span>, next <span class="function"><span class="keyword">func</span><span class="params">(<span class="type">int</span>)</span></span> <span class="type">int</span>) <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> a &gt; b &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> term(a) + Sum(next(a), b, term, next)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Square</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123; <span class="keyword">return</span> x * x &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cube</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span>   &#123; <span class="keyword">return</span> x * x * x &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Inc</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span>    &#123; <span class="keyword">return</span> x + <span class="number">1</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1^2 + 2^2 + ... + 10^2</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Sum of squares:&quot;</span>, Sum(<span class="number">1</span>, <span class="number">10</span>, Square, Inc))</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1^3 + 2^3 + ... + 10^3</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Sum of cubes:&quot;</span>, Sum(<span class="number">1</span>, <span class="number">10</span>, Cube, Inc))</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1 + 2 + ... + 100</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Sum of integers:&quot;</span>, Sum(<span class="number">1</span>, <span class="number">100</span>, <span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123; <span class="keyword">return</span> x &#125;, Inc))</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 1/2 + 1/3 + ... + 1/10</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Sum of reciprocals:&quot;</span>, Sum(<span class="number">2</span>, <span class="number">10</span>,</span><br><span class="line">		<span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123; <span class="keyword">return</span> <span class="number">1</span> / x &#125;, <span class="comment">// 整数除法，结果会是 0</span></span><br><span class="line">		Inc))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SICP中强调函数和数一样，都是一等公民。函数可以像数据一样作为参数传递，像数据一样作为返回值，函数不仅仅是一个“运算工具”，而是可以被当作“数据”去操作。</p>
+<p><code>term func(int) int</code>用来决定“对当前元素做什么” <code>next func(int) int</code>用来决定“如何得到下一个元素”。Sum(1, 10, Square, Inc)<code>表达需要计算1到10的平方和，现在只要更改为</code>Sum(1, 10, Cube, Inc)&#96;表达变成了计算1到10点立方和。通过这种更换入参函数的方式会获得更好灵活性，更高的扩展性。</p>
+<blockquote>
+<p>将过程作为参数传递，能显著增强我们的程序设计语言的表达能力,通过创建另一种其返回本身也是过程的过程，还可以得到进一步的表达能力。</p>
+<p>如果没有函数作为参数，那么会严重限制抽象的能力。</p>
+</blockquote>
+<h4 id="Lamabda-表达式"><a href="#Lamabda-表达式" class="headerlink" title="Lamabda 表达式"></a>Lamabda 表达式</h4><p>Lamabda匿名函数，在多种编程语言中都能看到它不同的实现，这些实现的具体细节略有差别，但在SICP中它有三个重要作用：</p>
+<p>1.定义匿名函数，不需要进行函数的声明，直接声明一个一次性的函数，在Lisp Scheme中可以写成<code>((lambda (x) (* x x)) 5)</code>，在Go语言中可以写成:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result := <span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> x * x</span><br><span class="line">&#125;(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<p>2.作为高阶函数的参数，Lisp 可以写成：<code>(sum (lambda (x) (* x x)))</code>，Go中也能类似写成：<code>sum(result)</code></p>
+<p>3.局部函数定义，在一个函数内部定义辅助函数，而不需要全局命名。</p>
+<p>在Go语言中需要使用匿名函数&#x2F;闭包来实现这一思想：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makeCounter</span><span class="params">()</span></span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    count := <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="type">int</span> &#123;</span><br><span class="line">        count++</span><br><span class="line">        <span class="keyword">return</span> count</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c1 := makeCounter()</span><br><span class="line">    fmt.Println(c1()) <span class="comment">// 1</span></span><br><span class="line">    fmt.Println(c1()) <span class="comment">// 2</span></span><br><span class="line">    fmt.Println(c1()) <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line">    c2 := makeCounter()</span><br><span class="line">    fmt.Println(c2()) <span class="comment">// 1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ <span class="number">1</span></span><br><span class="line">$ <span class="number">2</span></span><br><span class="line">$ <span class="number">3</span></span><br><span class="line">$ <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的问题在于，<code>makeCounter</code>函数中的<code>count</code>应该在函数返回后销毁，但是在输出结果中可以看到它不断叠加。当<code>c2</code>声明后又重新从<code>1</code>开始。这说明每个<code>makeCounter</code>函数都会创建一个独立的<code>count</code>绑定。这在Go语言中被称为<strong>闭包</strong>。</p>
+<p>在Go语言中，闭包捕获的变量不是立即拷贝，而是<strong>引用捕获</strong>，如果多个闭包共享同一个外部变量，那么它们看到的是同一个值。变量会被提升到堆上，保证生命周期和闭包一致。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">multiplier</span><span class="params">(factor <span class="type">int</span>)</span></span> <span class="function"><span class="keyword">func</span><span class="params">(<span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> x * factor <span class="comment">// 捕获 factor</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	double := multiplier(<span class="number">2</span>)</span><br><span class="line">	triple := multiplier(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">	fmt.Println(double(<span class="number">5</span>)) </span><br><span class="line">	fmt.Println(triple(<span class="number">5</span>)) </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ <span class="number">10</span></span><br><span class="line">$ <span class="number">15</span></span><br></pre></td></tr></table></figure>
+
+<p>这个工厂函数可以进一步说明这个问题，<code>double</code>声明时传入<code>2</code>会被<code>multiplier</code>中的 <code>factor</code> 捕获，所以使用double(5)时输出10。所以后续再次声明<code>triple</code>时，虽然函数体相同，但捕获的环境不同(factor&#x3D;3)，因此 triple(5) 输出 15。</p>
+<p>这点与SICP的环境模型完全一致<code>(lambda (x) (+ x y))</code> 在这个表达式中，参数 x 是调用时传入的，而 y 来自于定义时的环境。闭包会捕获 y 的值，从而保证函数可以在不同环境下表现出不同的行为。</p>
+<p>在C#中Lambda可以不只是代码，还可以是”代码的抽象语法树”，在运行时分析，修改，甚至编译执行。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.Users.Where(u =&gt; u.Age &gt; <span class="number">18</span>)</span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式可以直接被翻译成SQL，而不是在内存中执行筛选。</p>
+<p>因为 Lambda 和委托&#x2F;泛型结合得很好，C# 能轻松表达 LINQ 这种声明式风格：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var evens = list.Where(x =&gt; x % 2 == 0).Select(x =&gt; x * x);</span><br></pre></td></tr></table></figure>
+
+<p>复合过程是一种至关重要的抽象机制，它可以让我们能将一般性的计算方法，用着一程序设计语言里的元素明确描述。高阶函数能如何去操作这些一般性的方法，以建立起进一步的抽象。如何根据工作中的情况，选择合适的抽象层次。能基于这种抽象去思考确实是最重要的，高阶过程的重要性在于使我们能显式地用程序设计语言的要素去描述这些抽象，能像操作其他设计元素一样去操作它们。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>构造过程抽象强调的是不只是把代码拆解成函数，而是把计算过程当作可以被命令，组合与操作的对象。这背后传递是思想是为了构建抽象的思维，而非细节。通过基础表达式，数字，运算符，表达式数到复合过程，这代表可以通过最基础的元素组合表达更加丰富的计算过程。</p>
+<p>递归和迭代展示了过程的不同“形态”，展示出不同处理方式资源的开销不同，“渐进复杂度”衡量算法随输入数据规模，展示出变化趋势。高阶函数的概念让函数作为一等公平，可以作为参数或返回值，进一步提升了抽象能力。而Lambda表达式与闭包简化了函数的传递和局部定义，还为更复杂的抽象(如函数工厂)打下基础。</p>
+<h3 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h3><p><a target="_blank" rel="noopener" href="https://coolshell.cn/articles/21164.html">https://coolshell.cn/articles/21164.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://people.eecs.berkeley.edu/~bh/sicp.html">https://people.eecs.berkeley.edu/~bh/sicp.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2015/04/tail-call.html">https://www.ruanyifeng.com/blog/2015/04/tail-call.html</a></p>
+<p>《计算机程序的构造和解释》</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2024/09/28/%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E7%9A%84%E6%96%B9%E5%BC%8F/">https://silentechoe.github.io/2024/09/28/%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E7%9A%84%E6%96%B9%E5%BC%8F/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/"># 计算机基础</a>
+                    
+                        <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"># 读书笔记</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/10/09/%E5%A9%9A%E7%A4%BC%EF%BC%8C%E8%81%9A%E4%BC%9A%E5%92%8C%E7%A6%BB%E5%88%AB/">婚礼，聚会和离别</a>
+            
+            
+            <a class="next" rel="next" href="/2024/09/18/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%A5%BD%E7%9A%84%E5%BE%AE%E6%9C%8D%E5%8A%A1/">如何设计一个好的微服务</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
