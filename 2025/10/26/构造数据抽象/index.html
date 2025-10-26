@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Kai">
+
+
+
+
+
+<title>SICP|构造数据抽象 | 面向兴趣编程</title>
+
+
+
+    <link rel="icon" href="/icoimage.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">anonymity&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">anonymity&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6;    // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function () {
+            tocbot.refresh(obj_merge(tocbot_default_config, { hasInnerContainers: true }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function () {
+        tocbot.init(obj_merge(tocbot_default_config, { collapseDepth: 1 }));
+    });
+
+    function expandToc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, { collapseDepth: expanded ? 1 : DEPTH_MAX }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">SICP|构造数据抽象</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Kai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 26, 2025&nbsp;&nbsp;10:49:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在<a href="https://silentechoe.github.io/2025/09/28/%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E7%9A%84%E6%96%B9%E5%BC%8F/">构造过程抽象</a>一文中，我们讨论了<strong>过程的抽象</strong>这一思想。通过复合过程，我们得以提升程序设计时的概念层次，使设计更加模块化，并增强语言的表达能力。</p>
+<p>不过，在那个阶段中，所有函数操作的都是最简单的数值类型，而简单的数据结构表达能力是不够的，许多程序在设计之初就是为了模拟真实世界中多层次的结构和关系。正如定义过程让我们能在更高层次上组织计算一样，同样的，能够构造复合数据的能力，也将使我们得以在此比语言提供的基本数据对象更高的概念层次上，处理与数据有关的各种问题。</p>
+<h3 id="什么是数据抽象？"><a href="#什么是数据抽象？" class="headerlink" title="什么是数据抽象？"></a>什么是数据抽象？</h3><p>SICP中数据抽象被解释为一种方法学，它可以将一个复合对象的使用，与该数据对象怎样由更基本的数据对象构造起来的细节隔离开。它的核心目的是为了<strong>使用数据时，只关心“数据能干什么”，而不去关心它是如何实现的。</strong></p>
+<blockquote>
+<p>数据抽象的基本思想，就是设法构造出一些使用复合数据对象的程序，使它们就像是在“抽象数据”上操作一样。我们的程序中使用数据的方式应该是这样的:除了完成当前工作所必要的东西之外，它们不对所用数据做任何多余的假设。与此同时，一种“具体”数据表示的定义，也应该与程序中使用数据的方式无关。在我们的系统中，这样两个部分之间的界面将是一组过程，称为“选择函数”和“构造函数”。</p>
+</blockquote>
+<p>比如在程序里面操作一个坐标点位，如果不使用数据抽象，可能直接使用数组，Map，结构体等数据结构：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p := [<span class="number">2</span>]<span class="type">float64</span>&#123;<span class="number">3</span>, <span class="number">4</span>&#125;  </span><br><span class="line">fmt.Println(p[<span class="number">0</span>], p[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+
+<p>这样的数据结构会有一个问题：使用这个数据结构的开发者，必须知道每个下标代表的值是纵坐标还是横坐标，一旦数据结构发生变化，那么所用引用到该数据的地方都需要更改。</p>
+<p>如果用数据抽象，不直接操作数组，而直接提供一组“接口”：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Point <span class="keyword">struct</span>&#123; x, y <span class="type">float64</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MakePoint</span><span class="params">(x, y <span class="type">float64</span>)</span></span> Point &#123; <span class="keyword">return</span> Point&#123;x, y&#125; &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">X</span><span class="params">(p Point)</span></span> <span class="type">float64</span>           &#123; <span class="keyword">return</span> p.x &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Y</span><span class="params">(p Point)</span></span> <span class="type">float64</span>           &#123; <span class="keyword">return</span> p.y &#125;</span><br><span class="line"></span><br><span class="line">p := MakePoint(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">fmt.Println(X(p), Y(p))</span><br></pre></td></tr></table></figure>
+
+<p>使用者无需知道内部是由结构体还是数组来构建，只需要把数据的构建和如何使用数据分开，调用者通过“构造函数”和“选择函数”来操作数据，那么就能自由地改变数据实现，无需更改上层的业务逻辑。</p>
+<p><strong>抽象屏障</strong>在表述中更像是一条分界线，用来把调用者和底层的实现细节隔离开。在上述的例子中，<code>MakePoint</code>就是构造函数，而<code>X</code>和<code>Y</code>是选择函数。这么做的好处在于：通过分界线来屏蔽细节，当有一天底层发生改变时上层的业务也无需改动。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Point <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">float64</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MakePoint</span><span class="params">(x, y <span class="type">float64</span>)</span></span> Point &#123; <span class="keyword">return</span> Point&#123;<span class="string">&quot;x&quot;</span>: x, <span class="string">&quot;y&quot;</span>: y&#125; &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">X</span><span class="params">(p Point)</span></span> <span class="type">float64</span>            &#123; <span class="keyword">return</span> p[<span class="string">&quot;x&quot;</span>] &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Y</span><span class="params">(p Point)</span></span> <span class="type">float64</span>            &#123; <span class="keyword">return</span> p[<span class="string">&quot;y&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用Map替换struct，但是对**fmt.Println(X(p), Y(p))**函数来说无需改动，可以看到所有的改动都发生在屏障内部(MakePoint&#x2F;X&#x2F;Y)。</p>
+<p>抽象屏障是为了隔离系统中不同的层次，每一层都可以使用数据的抽象程序与实现数据抽象的程序分开。</p>
+<blockquote>
+<p>这里不是OOP中的抽象类和实现类，而是从使用的角度来说，用这种抽象的概念来“分隔数据的使用者与数据的实现”。</p>
+<p>抽象屏障的意义不是为了方便，而是为了稳定和解耦。用接口来屏蔽结构。</p>
+</blockquote>
+<p>表达方式的选择会对操作它的程序产生影响。这才是关键，如果后来表示的方式改变了，所有受影响的程序也需要随之改变。对于大型程序而言，这种工作非常耗时，而且代价极其高，除非在设计时就已经将依赖于表示的成分限制到很少的一些程序模块上。</p>
+<p>借助数据抽象的思想就能设计出不会被数据表示的细节纠缠的程序，使程序能够保持很好的弹性，得以应用到不同的具体表示上。</p>
+<h4 id="数据到底是什么？"><a href="#数据到底是什么？" class="headerlink" title="数据到底是什么？"></a>数据到底是什么？</h4><p>通过过程组合形成更复杂的过程，通过将多个数据对象组合在一起形成复合数据对象，这种组合本身只是过程。在SICP中甚至有例子可以只用过程来表示数据。比如上述的<code>Point</code>结构体，通常情况下对外表述可能会说这个结构体就是数据。但是同样地可以用**闭包(过程)**来进行改写：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MakePoint</span><span class="params">(x, y <span class="type">float64</span>)</span></span> <span class="function"><span class="keyword">func</span><span class="params">(<span class="type">string</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(op <span class="type">string</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> op == <span class="string">&quot;x&quot;</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> x</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> y</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">X</span><span class="params">(p <span class="keyword">func</span>(<span class="type">string</span>)</span></span> <span class="type">float64</span>) <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> p(<span class="string">&quot;x&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Y</span><span class="params">(p <span class="keyword">func</span>(<span class="type">string</span>)</span></span> <span class="type">float64</span>) <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> p(<span class="string">&quot;y&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">p := MakePoint(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">fmt.Println(X(p), Y(p))</span><br></pre></td></tr></table></figure>
+
+<p>即使不使用高级编程语言内置的基础数据结构，也能通过函数来进行表达。调用放在执行<code>MakePoint</code>函数和<code>fmt.Println</code>时输出与结构体改写的并无区别。</p>
+<p>从抽象的角度来看，一个数据对象的身份是由其支持的操作决定的；存储结构只是实现细节，可以随时替换。</p>
+<blockquote>
+<p>不存在天然的数据，只有我们设计出的接口与行为。</p>
+</blockquote>
+<p>SICP中实现了序对这一数据抽象，它是一种复合的结构，它会将两个对象组合成一个新的”对象”。用Go语言表达大概是这样的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Pair <span class="function"><span class="keyword">func</span><span class="params">(<span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;, <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cons</span><span class="params">(a, b <span class="keyword">interface</span>&#123;&#125;)</span></span> Pair &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(f <span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;, <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125; &#123;</span><br><span class="line">		<span class="keyword">return</span> f(a, b)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Car</span><span class="params">(p Pair)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> p(<span class="function"><span class="keyword">func</span><span class="params">(a, b <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123; <span class="keyword">return</span> a &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cdr</span><span class="params">(p Pair)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> p(<span class="function"><span class="keyword">func</span><span class="params">(a, b <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123; <span class="keyword">return</span> b &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的Pair没有使用Map，数组，结构体，它使用闭包。但是它在行为上完全等价于一个包含a和b的二元组。</p>
+<h3 id="层次性数据和闭包性质"><a href="#层次性数据和闭包性质" class="headerlink" title="层次性数据和闭包性质"></a>层次性数据和闭包性质</h3><p>复合数据不等于直接把两个数放在一起，而是为了把对象和关系组合起来，形成更复杂的层次结构。它表达的是如何用少量组合规则无限扩展表达能力。</p>
+<blockquote>
+<p>通过复合数据，我们不仅能表示单个对象，还能表示对象之间的结构和关系</p>
+</blockquote>
+<p>SICP中用”<strong>序列</strong>“组合成”链表”来作为构建层次性数据结构的示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Pair <span class="keyword">struct</span> &#123;</span><br><span class="line">	Car <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	Cdr <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cons</span><span class="params">(a, b <span class="keyword">interface</span>&#123;&#125;)</span></span> *Pair &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Pair&#123;Car: a, Cdr: b&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Car</span><span class="params">(p *Pair)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> p.Car</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cdr</span><span class="params">(p *Pair)</span></span> <span class="keyword">interface</span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> p.Cdr</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PrintList</span><span class="params">(list *Pair)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> list != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(Car(list))</span><br><span class="line">		next := Cdr(list)</span><br><span class="line">		<span class="keyword">if</span> next == <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		list = next.(*Pair)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	l := Cons(<span class="number">1</span>, Cons(<span class="number">2</span>, Cons(<span class="number">3</span>, <span class="literal">nil</span>)))</span><br><span class="line">	PrintList(l)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ <span class="number">1</span> -&gt; <span class="number">2</span> -&gt; <span class="number">3</span> -&gt; <span class="literal">nil</span></span><br></pre></td></tr></table></figure>
+
+<p>一个Pair可以组合两个元素，两个元素可以继续嵌套成Pair。链表就是多重嵌套的序队，用相同的构造方式把数据一层一层堆叠起来就形成了“结构”，这就是<strong>层次性</strong>的雏形。通过简单的组合操作，可以无限嵌套构造更加复杂的结构，比如链表，图，树等。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ree := Cons(<span class="number">1</span>, Cons(Cons(<span class="number">2</span>, Cons(<span class="number">3</span>, <span class="literal">nil</span>)), Cons(<span class="number">4</span>, <span class="literal">nil</span>)))</span><br><span class="line"></span><br><span class="line">        (<span class="number">1</span>)</span><br><span class="line">       /   \</span><br><span class="line">     (<span class="number">2</span> <span class="number">3</span>)  (<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<p>SICP中谈论的“<strong>闭包性质（Closure Property）</strong>”可以视为：当一种组合操作的结果依然是同一种类型的元素时，可以说这个操作具有闭包性。</p>
+<p>这意味着编程语言中只需要包含少量的基础数据结构，通过闭包的性质，<strong>可以递归构造出任意复杂的数据结构。</strong>在云原生中，Kubernetes 中的Deployment,StatefulSets本质上也是层层组合而成(Pod模版+ReplicaSet)，只要基础的规则稳定实现，就能不断嵌套成更复杂的结构，也无需改动底层的实现机制。</p>
+<p>SICP中提到的“闭包性质”不是指编程语言中的闭包机制，而是数学意义上的“封闭性”——用一种组合方式产生的新数据对象，还可以继续用相同方式进行组合。比如JSON中一个对象嵌套另外一个对象，也是闭包性质体现。</p>
+<blockquote>
+<p>如果有一种组合方式，它组合两个对象之后返回的结果，也可以被同样的方式再次组合，那么这种组合方式具有闭包性质。</p>
+</blockquote>
+<p>不同于编程语言中的“闭包”(它指的是函数可以捕获它定义环境中的自由变量)，闭包性质关注的是数据结构和操作的自我封闭性，不是函数捕获环境的行为，这点要区分来看待。闭包函数是编程语言的机制，闭包性质是抽象设计的结构性特征，这两者经常与“递归”和“抽象”同时出现，所以容易混淆，这点要特别说明。</p>
+<h4 id="序列作为接口"><a href="#序列作为接口" class="headerlink" title="序列作为接口"></a>序列作为接口</h4><p>SICP中引入了<strong>序列抽象</strong>作为操作层的统一接口，这里“序列”不是指某一种具体的数据结构，而是一种<strong>约定的抽象接口</strong>，它指的是一类可以被遍历，组合，变换的数据结构。它不特指某种数据结构，只要满足接口的约定就行。</p>
+<blockquote>
+<p>当我们拥有了闭包性质，就可能有许多种不同方式来表示同样的概念。但如果我们为这些结构约定一套标准接口，那么我们就能对所有这些不同表示采取相同的操作方式。</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Sequence[T any] <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Next 返回下一个元素和一个 bool 表示是否还有</span></span><br><span class="line">    Next() (T, <span class="type">bool</span>)</span><br><span class="line">    <span class="comment">// Map 返回一个新的 Sequence，其中每个元素经 f 变换</span></span><br><span class="line">    Map(<span class="function"><span class="keyword">func</span><span class="params">(T)</span></span> T) Sequence[T]</span><br><span class="line">    <span class="comment">// Filter 返回一个新的 Sequence，仅包含满足 p 的元素</span></span><br><span class="line">    Filter(<span class="function"><span class="keyword">func</span><span class="params">(T)</span></span> <span class="type">bool</span>) Sequence[T]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> sliceSequence[T any] <span class="keyword">struct</span> &#123;</span><br><span class="line">    data []T</span><br><span class="line">    idx  <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewSliceSequence</span>[<span class="title">T</span> <span class="title">any</span>]<span class="params">(data []T)</span></span> *sliceSequence[T] &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;sliceSequence[T]&#123;data: data, idx: <span class="number">0</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sliceSequence[T])</span></span> Next() (T, <span class="type">bool</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> s.idx &gt;= <span class="built_in">len</span>(s.data) &#123;</span><br><span class="line">        <span class="keyword">var</span> zero T</span><br><span class="line">        <span class="keyword">return</span> zero, <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    v := s.data[s.idx]</span><br><span class="line">    s.idx++</span><br><span class="line">    <span class="keyword">return</span> v, <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sliceSequence[T])</span></span> Reset() &#123;</span><br><span class="line">    s.idx = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sliceSequence[T])</span></span> Map(f <span class="function"><span class="keyword">func</span><span class="params">(T)</span></span> T) Sequence[T] &#123;</span><br><span class="line">    s.Reset()</span><br><span class="line">    newData := <span class="built_in">make</span>([]T, <span class="number">0</span>, <span class="built_in">len</span>(s.data))</span><br><span class="line">    <span class="keyword">for</span> v, ok := s.Next(); ok; v, ok = s.Next() &#123;</span><br><span class="line">        newData = <span class="built_in">append</span>(newData, f(v))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> NewSliceSequence(newData)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *sliceSequence[T])</span></span> Filter(p <span class="function"><span class="keyword">func</span><span class="params">(T)</span></span> <span class="type">bool</span>) Sequence[T] &#123;</span><br><span class="line">    s.Reset()</span><br><span class="line">    newData := <span class="built_in">make</span>([]T, <span class="number">0</span>, <span class="built_in">len</span>(s.data))</span><br><span class="line">    <span class="keyword">for</span> v, ok := s.Next(); ok; v, ok = s.Next() &#123;</span><br><span class="line">        <span class="keyword">if</span> p(v) &#123;</span><br><span class="line">            newData = <span class="built_in">append</span>(newData, v)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> NewSliceSequence(newData)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ints := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>&#125;</span><br><span class="line">    seq := NewSliceSequence(ints)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Map: 每个元素乘以2</span></span><br><span class="line">    mapped := seq.Map(<span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> x * <span class="number">2</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Filter: 只保留 &gt; 6 的元素</span></span><br><span class="line">    filtered := mapped.Filter(<span class="function"><span class="keyword">func</span><span class="params">(x <span class="type">int</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> x &gt; <span class="number">6</span></span><br><span class="line">    &#125;)</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> v, ok := filtered.Next(); ok; v, ok = filtered.Next() &#123;</span><br><span class="line">        fmt.Println(v)  <span class="comment">// 输出：8, 10, 12</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Sequence[T]</code>是一个通用的接口，无论底层实现的是什么，只要实现了这个接口就能使用相同的操作。Map 和 Filter 返回的依然是<code>Sequence[T]</code>，这说明操作的结果依然是序列，使用者不需要关心底层数据是什么，只要使用<code>Next()</code> <code>Map()</code> <code>Filter()</code>就好了。</p>
+<p>这种抽象的好处在于不用为每种数据结构分别编写具体的逻辑，Map、Filter、Reduce 这样的操作可以“统一”处理所有结构，结构的差异又可以被隐藏在抽象屏障后面，操作却又能保持一致。也就是说可以像操作数组一样去操作树，图，流等。</p>
+<p>在现代的架构中使用接口来屏蔽实现类的方式被普遍应用，复杂性不会和结构绑定，而是转移到了更抽象的”操作层“(业务层或领域层Domain Layer)。</p>
+<h3 id="符号数据"><a href="#符号数据" class="headerlink" title="符号数据"></a>符号数据</h3><blockquote>
+<p>迄今为止，我们用过的所有复合数据都是从数值出发构造起来的。在这一节我们要扩充语言的表述能力，引进把字符的串（字符串，也简称为串）作为数据的功能。</p>
+</blockquote>
+<p>无论是<strong>序对</strong>还是<strong>序列</strong>在示例中，都是使用数字作为底层的原子数据，虽然通过这些已经能组合出复杂的数据结构，但想表达“真实的世界”还远远不够。字符串和数字一样能存放在变量中，被组合成复合的数据结构，能被函数操作……这意味着我们表达的内容会更丰富，比如名称，状态，标识符。C语言中没有字符串的基础数据结构，但是基于C语言开发的Redis中实现<code>String</code>并被被普遍使用，Json字符串被存储在中间件中更是被广泛使用。</p>
+<blockquote>
+<p>“符号数据”可以将名字，结构当作<strong>数据本身</strong>处理，但又不执行它们。</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(+ <span class="number">1</span> <span class="number">2</span>)  ; 这是一个表达式</span><br><span class="line"><span class="string">&#x27;+       ; 这是一个符号</span></span><br><span class="line"><span class="string">symbol := &quot;add&quot;  // 只是名字本身，不执行</span></span><br></pre></td></tr></table></figure>
+
+<p>站在更加宏观的角度上来看<strong>符号数据</strong>，高级的编程语言不止计算“数值”，还需要在底层来<strong>构造解释器</strong>。解释器必须要有“符号”这个概念，比如在进行数据运算时通常使用(+ - * &#x2F;)来表达加减乘除，可 + 是一个符号，解释器的工作就是用于识别这些特殊的符号，找到对应的操作然后运用到配套的数值上，从而产生运算。</p>
+<p>至此编程语言获得了<strong>自我描述</strong>的能力，可以编写程序来“解释”“生成”“修改”某一个表达式，这就是元编程的雏形。</p>
+<p>解释器比较关键的点在于：</p>
+<p>1.词法分析，把(+ 1 2)切分成最小的“词快” <code>&quot;(&quot;, &quot;+&quot;, &quot;1&quot;, &quot;2&quot;, &quot;)&quot;</code> </p>
+<p>2.语法分析，进一步把“词快”组织成树状结构（AST）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Call</span><br><span class="line">├─ operator: &quot;+&quot;</span><br><span class="line">└─ args: [1, 2]</span><br></pre></td></tr></table></figure>
+
+<p>3.环境，一个“字典”，记录名字—值，比如 + 这个名字对应的是“加法函数”；x 对应 42。</p>
+<p>4.求值器，按预定的规则执行：如果是数字就返回自己；如果是 (+ a b) 就先算出 a 和 b，再做加法；如果是变量就去环境查它的值。</p>
+<p>解释器作为现在高级编程语言中的幕后功臣，一直是重要的部分，因为它能让代码变为数据，提供了宏、内置函数、语法糖这些可扩展能力。最终能用语言写出这个语言自己的解释器，也被称为自举。</p>
+<h3 id="抽象数据的多重表示"><a href="#抽象数据的多重表示" class="headerlink" title="抽象数据的多重表示"></a>抽象数据的多重表示</h3><p>一个系统的程序设计通常情况下是由多人在相当一段时间内完成的，系统的需求不是永恒不变的，它会随着需求和时间而变化。在这种情况下要求所有开发者在<strong>数据表示</strong>的选择达成一致几乎是不可能的。</p>
+<p>抽象屏障能很好地<strong>隔离表示与使用</strong>，但在一个真实的大型系统中，<strong>“表示本身”也并非永远唯一</strong>。</p>
+<p>除了需要隔离表示与使用的数据抽象屏障外，我们还需要有抽象屏障去隔离不同的设计选择，允许不同的设计选择在同一个程序里共存。这段话本质其实在讲”<strong>模块化设计</strong>“的必要性，讨论的是在大型系统中如何通过”抽象屏障”实现模块化与演进，从概念上更进一步后讨论的不只是如何划分模块，而是在抽象层面上为模块与模块之间建立一个“隔离&#x2F;协作”的机制。</p>
+<p>SICP中使用处理“复数”作为例子，可以使用<strong>直角坐标</strong> (x, y)或<strong>极坐标</strong> (r, θ) 基于不同的数据结构计算返回复数的模长，在不抽象的情况下可以写成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Magnitude</span><span class="params">(x, y <span class="type">float64</span>)</span></span> <span class="type">float64</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> math.Sqrt(x*x + y*y)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不同开发者会有不同的表达习惯，如果更偏向<strong>极坐标</strong>（r, θ）的方式，也能通过抽象屏障封装起来，这两种表示方式各有优势，但系统最终必须要面对的是——<strong>它们会共存</strong>。</p>
+<p>即便我们很好地定义了抽象屏障，也无法避免<strong>同一个概念在系统中出现多种实现</strong>的现实。这就是 <strong>“多重表示”</strong>（multiple representations）问题出现的根源：</p>
+<blockquote>
+<p>不同表示方式共存于同一系统中，系统必须设计机制让这些表示能够协同工作，而不让上层业务陷入混乱。</p>
+</blockquote>
+<p>SICP提到使用<strong>类型标签</strong>，相当于通过标注让数据表明它的类型，在Go中可以使用interface 加上类型字段来模拟：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ComplexType <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	Rectangular ComplexType = <span class="string">&quot;rectangular&quot;</span></span><br><span class="line">	Polar       ComplexType = <span class="string">&quot;polar&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ComplexNumber <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type ComplexType</span><br><span class="line">	X, Y <span class="type">float64</span> </span><br><span class="line">	R, T <span class="type">float64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c1 := ComplexNumber&#123;Type: Rectangular, X: <span class="number">3</span>, Y: <span class="number">4</span>&#125;</span><br><span class="line">	c2 := ComplexNumber&#123;Type: Polar, R: <span class="number">5</span>, T: math.Pi / <span class="number">4</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>让数据携带”类型”标注是最简单的区分方式，这种方式简单易用，比如在某些框架支持多种数据库，在启动参数中标注一个带有“数据库类型”的参数就可以在多种数据库中实现切换。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(c Config)</span></span>  &#123;</span><br><span class="line">  <span class="keyword">switch</span> c.Type &#123;</span><br><span class="line">    <span class="keyword">case</span> Mysql:</span><br><span class="line">    			....</span><br><span class="line">    <span class="keyword">case</span> Mongo:</span><br><span class="line">    			...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>Run</code>函数可以在服务启动时自由切换数据库的使用，但是该函数是一个<strong>通用型函数</strong>，它无需调用使用的哪一种数据结构，它通过的是内部的Type来派生行为，如果未来还需要支持更多的数据库，只需要在这个函数中添加一个<code>case</code>。这种方式虽然简单方便，但是违背了”开闭原则”每次添加新的数据都要更改该函数。</p>
+<p>在现代的架构系统中可以看到，一些开发者选择另外一种方式：把“操作”与“类型”的映射关系，存到一张表中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DBType <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	MySQL    DBType = <span class="string">&quot;mysql&quot;</span></span><br><span class="line">	MongoDB  DBType = <span class="string">&quot;mongo&quot;</span></span><br><span class="line">	Postgres DBType = <span class="string">&quot;postgres&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DBConfig <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type     DBType</span><br><span class="line">	Host     <span class="type">string</span></span><br><span class="line">	Port     <span class="type">int</span></span><br><span class="line">	Username <span class="type">string</span></span><br><span class="line">	Password <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数据库操作的统一接口</span></span><br><span class="line"><span class="keyword">type</span> DBHandler <span class="function"><span class="keyword">func</span><span class="params">(cfg DBConfig)</span></span> <span class="type">error</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 分派表，存储“类型 → handler”的映射</span></span><br><span class="line"><span class="keyword">var</span> dbHandlerTable = <span class="keyword">map</span>[DBType]DBHandler&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册 handler</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RegisterDBHandler</span><span class="params">(t DBType, f DBHandler)</span></span> &#123;</span><br><span class="line">	dbHandlerTable[t] = f</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通用调用入口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ConnectDB</span><span class="params">(cfg DBConfig)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> handler, ok := dbHandlerTable[cfg.Type]; ok &#123;</span><br><span class="line">		<span class="keyword">return</span> handler(cfg)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;no handler registered for db type: %s&quot;</span>, cfg.Type)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	RegisterDBHandler(MySQL, <span class="function"><span class="keyword">func</span><span class="params">(cfg DBConfig)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;[MySQL] Connecting to %s:%d as %s\n&quot;</span>, cfg.Host, cfg.Port, cfg.Username)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	RegisterDBHandler(MongoDB, <span class="function"><span class="keyword">func</span><span class="params">(cfg DBConfig)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;[MongoDB] Connecting to %s:%d as %s\n&quot;</span>, cfg.Host, cfg.Port, cfg.Username)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	RegisterDBHandler(Postgres, <span class="function"><span class="keyword">func</span><span class="params">(cfg DBConfig)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;[Postgres] Connecting to %s:%d as %s\n&quot;</span>, cfg.Host, cfg.Port, cfg.Username)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>没有把逻辑硬编码在通用函数内部，而是通过数据库的动态数据来动态查找并实现，在现代编程中有部分项目使用这种方式来灵活构建开源项目，比较出名的是Casbin，它将数据结构存放在数据库或Csv中来实现动态的权限判断。</p>
+<h3 id="包含通用型操作的系统"><a href="#包含通用型操作的系统" class="headerlink" title="包含通用型操作的系统"></a>包含通用型操作的系统</h3><p>很多开发大型项目的工程师的目标就是想要构建一个足够“通用”的程序，这意味着系统可以适配的场景更多，灵活性高，迭代速度也更快。从细节的角度来说，对函数的要求也更高，比如在编写一个“加减乘除”通用的操作时，开发者希望这些操作既能算 1+2 也能算 1&#x2F;2，需要支持复数(直角&#x2F;极坐标)，在后续的迭代中可能还需要增加“矩阵”，”多项式“这些操作。</p>
+<p>SICP给出的思路就是通过类型标签和操作表进行分派，可以把这个当作”插件系统”的雏形，通过“类型标签”和“操作表”让同一个<strong>操作名</strong>根据运行时的<strong>参数类型组合</strong>查询表找到对应的实现。它的优势是可以在不更改代码的情况下新增一个新类型或新操作，并支持<strong>跨类型运算</strong>与<strong>类型提升</strong>，以适应某些需要可插拔的场景。</p>
+<p>这很容易联想到现代编程语言中的<strong>泛型</strong>，像加减乘除这种通用操作可以通过<strong>泛型</strong>来实现一样的效果，但是<strong>泛型</strong>的目标是让同一份代码复用与多种静态类型，它在编译期间完成类型检查与实例化，它强调的是由编译器保证的强类型安全。</p>
+<p>如果基于Go语言的<strong>泛形</strong>来实现加法，泛型约束对内置的数值类型可以勉强实现，但对用户自定义的数值就无法灵活达成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;golang.org/x/exp/constraints&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Add</span>[<span class="title">T</span> <span class="title">constraints</span>.<span class="title">Integer</span> | <span class="title">constraints</span>.<span class="title">Float</span>]<span class="params">(a, b T)</span></span> T &#123;</span><br><span class="line">	<span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>泛型的长处在于算法的实现，比如拓扑排序，集合操作等，在这种情况下它的性能不错，类型安全，调试起来也方便。使用SICP中实现分派，它的核心在于add(T,U) 能在运行时决定，并在插件中动态的注册而无需更改核心框架。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Value <span class="keyword">interface</span>&#123; Tag() <span class="type">string</span> &#125;</span><br><span class="line"><span class="keyword">type</span> opFn <span class="function"><span class="keyword">func</span><span class="params">(a, b Value)</span></span> (Value, <span class="type">error</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> opTable = <span class="keyword">map</span>[<span class="type">string</span>]opFn&#123;&#125;                     </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">key</span><span class="params">(op <span class="type">string</span>, a, b Value)</span></span> <span class="type">string</span> &#123; <span class="keyword">return</span> op + <span class="string">&quot;|&quot;</span> + a.Tag() + <span class="string">&quot;,&quot;</span> + b.Tag() &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">register</span><span class="params">(op <span class="type">string</span>, aTag, bTag <span class="type">string</span>, f opFn)</span></span>  &#123; opTable[op+<span class="string">&quot;|&quot;</span>+aTag+<span class="string">&quot;,&quot;</span>+bTag] = f &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ApplyAdd</span><span class="params">(a, b Value)</span></span> (Value, <span class="type">error</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> f, ok := opTable[key(<span class="string">&quot;add&quot;</span>, a, b)]; ok &#123; <span class="keyword">return</span> f(a, b) &#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;no method for add on (%s,%s)&quot;</span>, a.Tag(), b.Tag())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不过这两种方式不是互斥的，现代架构中经常使用混合架构，它的核心思路是在外层用<strong>操作表</strong>开发一个派生的路径，在内层使用泛形把算法实现好：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Value <span class="keyword">interface</span>&#123; Tag() <span class="type">string</span> &#125;</span><br><span class="line"><span class="keyword">type</span> Fn1 <span class="function"><span class="keyword">func</span><span class="params">(Value)</span></span> <span class="type">error</span></span><br><span class="line"><span class="keyword">var</span> op1 = <span class="keyword">map</span>[<span class="type">string</span>]Fn1&#123;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Register1</span><span class="params">(op, tag <span class="type">string</span>, f Fn1)</span></span> &#123; op1[op+<span class="string">&quot;|&quot;</span>+tag] = f &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Apply1</span><span class="params">(op <span class="type">string</span>, v Value)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> f, ok := op1[op+<span class="string">&quot;|&quot;</span>+v.Tag()]; ok &#123; <span class="keyword">return</span> f(v) &#125;</span><br><span class="line">	<span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;no %s for %s&quot;</span>, op, v.Tag())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 内层实现</span></span><br><span class="line"><span class="keyword">type</span> Num <span class="keyword">interface</span>&#123; ~<span class="type">int</span> | ~<span class="type">int64</span> | ~<span class="type">float64</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Clamp</span>[<span class="title">T</span> <span class="title">Num</span>]<span class="params">(x, lo, hi T)</span></span> T &#123;</span><br><span class="line">	<span class="keyword">if</span> x &lt; lo &#123; <span class="keyword">return</span> lo &#125;</span><br><span class="line">	<span class="keyword">if</span> x &gt; hi &#123; <span class="keyword">return</span> hi &#125;</span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PVCSpec <span class="keyword">struct</span>&#123;  &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(PVCSpec)</span></span> Tag() <span class="type">string</span> &#123; <span class="keyword">return</span> <span class="string">&quot;storage.pvc&quot;</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">installPVC</span><span class="params">()</span></span> &#123;</span><br><span class="line">	Register1(<span class="string">&quot;validate&quot;</span>, <span class="string">&quot;storage.pvc&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(v Value)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">		spec := v.(PVCSpec)</span><br><span class="line">		_ = Clamp[<span class="type">int</span>]()     <span class="comment">// 这里用泛型做内核算法</span></span><br><span class="line">		_ = Clamp[<span class="type">float64</span>]() <span class="comment">// 多个数值类型安全复用</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式可以实现PaaS的Trait，让多个资源可以热插不同的“特征”，同时内部又能享受<strong>享受泛型带来的类型安全与性能</strong>，外层的调度器也不用编写 <code>if</code> 或 <code>switch</code>就可以扩展新特征。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>SICP中数据抽象是一种思想，它不是简单告诉怎么使用数组，结构体这些编程语言的特性，而是通过这些基础例子的演化来反应一些设计的原则，比如提及<strong>抽象屏障</strong>是为了讲述数据与使用之间的分界线，让表示与使用彻底解耦，<strong>闭包性质</strong> 让我们能用少量基础元素递归构造出复杂结构，这是所有现代语言复合数据结构的基础。<strong>符号数据</strong> 扩展了语言的表达能力。<strong>多重表示与分派机制</strong> 是大型系统演进的必然，提供了模块化和灵活性。</p>
+<p>在现代架构中，这些思想早已演化为各种成熟的技术体系：接口抽象、泛型、动态分派、插件系统、DSL、策略模式、Trait 机制……</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a target="_blank" rel="noopener" href="https://coolshell.cn/articles/21164.html">https://coolshell.cn/articles/21164.html</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Kai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://silentechoe.github.io/2025/10/26/%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E6%8A%BD%E8%B1%A1/">https://silentechoe.github.io/2025/10/26/%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E6%8A%BD%E8%B1%A1/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2022 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/"># 计算机基础</a>
+                    
+                        <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"># 读书笔记</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/09/28/%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E7%9A%84%E6%96%B9%E5%BC%8F/">构造过程抽象</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Kai | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
